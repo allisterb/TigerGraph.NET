@@ -13,13 +13,13 @@ namespace TigerGraph.CLI
         public bool Debug { get; set; }
     }
 
-    public class RestApiOptions
+    public class RestApiOptions : Options
     {
         [Option('t', "token", Required = false, HelpText = "Your TigerGraph server instance access token. If none is specified then use the environment variable TG_TOKEN.")]
-        public bool Token { get; set; }
+        public string Token { get; set; }
 
-        [Option('s', "server", Required = true, HelpText = "Your TigerGraph server instance URL. If none is specified then use the environment variable TG_SERVER_URL.")]
-        public Uri ServerUrl { get; set; }
+        [Option('s', "server", Required = false, HelpText = "Your TigerGraph server instance URL. If none is specified then use the environment variable TG_SERVER_URL.")]
+        public string ServerUrl { get; set; }
     }
 
     [Verb("echo", HelpText = "Ping the specified server using the specified access token.")]

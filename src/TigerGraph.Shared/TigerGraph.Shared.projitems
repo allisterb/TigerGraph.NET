@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Runtime.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ApiClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Echo.cs" />
   </ItemGroup>

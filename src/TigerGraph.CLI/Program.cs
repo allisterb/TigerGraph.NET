@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 using CO = Colorful.Console;
 using Figgle;
@@ -99,15 +101,43 @@ namespace TigerGraph.CLI
                     Exit(ExitResult.INVALID_OPTIONS);
                 }
             })
+            .WithParsed<RestApiOptions>(o => {
+                var token = string.IsNullOrEmpty(o.Token) ? Environment.GetEnvironmentVariable("TG_TOKEN") : o.Token;
+                if (string.IsNullOrEmpty(token))
+                {
+                    Error("The token parameter was not specified and the environment variable TG_TOKEN does not exist or is empty.");
+                    Exit(ExitResult.INVALID_OPTIONS);
+                }
+                var u = string.IsNullOrEmpty(o.ServerUrl) ? Environment.GetEnvironmentVariable("TG_SERVER_URL") : o.ServerUrl;
+                if (string.IsNullOrEmpty(u))
+                {
+                    Error("The server URL parameter was not specified and the environment variable TG_SERVER_URL does not exist or is empty.");
+                    Exit(ExitResult.INVALID_OPTIONS);
+                }
+                if (!Uri.TryCreate(u, UriKind.Absolute, out Uri url))
+                {
+                    Error("The server URL value {0} is not a valid absolute URI.", u);
+                    Exit(ExitResult.INVALID_OPTIONS);
+                }
+                Token = token;
+                ServerUrl = url;
+                Debug("Token: {0}. Url: {1}", Token, ServerUrl);
+            })
             .WithParsed<EchoOptions>(o =>
             {
-                //CUI(o).Wait();
-                Exit(ExitResult.SUCCESS);
+                Info("echo");
+                Exit(Echo(o).Result);
             });
         }
         #endregion
 
         #region Methods
+        static async Task<ExitResult> Echo(EchoOptions o)
+        {
+            
+            return ExitResult.SUCCESS;
+            //var api = new Api
+        }
         static void PrintLogo()
         {
             CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
@@ -145,6 +175,10 @@ namespace TigerGraph.CLI
 
         #region Properties
         static Type[] OptionTypes = { typeof(Options), typeof(RestApiOptions), typeof(EchoOptions) };
+
+        static string Token { get; set; }
+
+        static Uri ServerUrl { get; set; }
         #endregion
 
         #region Event Handlers
