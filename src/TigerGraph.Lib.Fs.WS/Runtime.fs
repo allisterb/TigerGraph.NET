@@ -3,6 +3,7 @@
 open WebSharper
 open WebSharper.JavaScript
 
+[<JavaScript>]
 type JSConLogger() = 
     inherit Logger()
     override x.Info(mt, args) = Console.Info(mt, args)
@@ -11,7 +12,7 @@ type JSConLogger() =
     override x.Error(ex, mt, args) = Console.Error(mt, args)
     override x.Begin(mt, args) = upcast(new JSConLoggerOp(x))
 
-and JSConLoggerOp(l:JSConLogger) =
+and [<JavaScript>] JSConLoggerOp(l:JSConLogger) =
     inherit Logger.Op(l)
     let mutable completed = false
     let mutable cancelled = false
@@ -23,27 +24,19 @@ and JSConLoggerOp(l:JSConLogger) =
         completed <- true
     override x.Dispose() = if not(completed || cancelled) then l.Error("Cancelled.")
 
+[<JavaScript>]
 type Runtime() = 
     inherit Base.Runtime()
-    
+    static do Base.Runtime.SetLogger(new JSConLogger())
 
-[<AutoOpen>]
+[<AutoOpen; JavaScript>]
 module Runtime =
-    do Runtime.SetLogger(new JSConLogger())
     
-    let info = Runtime.Info
-
-    let debug = Runtime.Debug
+    let jserror = JQuery.JQuery.Error 
     
-    let err = Runtime.Error
+    let info = Console.Info
+        
+    let error = Console.Error
     
-    let beginOp = Runtime.Begin
-
-    let infof mt args = Runtime.Info(mt, List.toArray args)
-
-    let debugf mt args = Runtime.Debug(mt, List.toArray args)
-
-    let errf mt args = Runtime.Error(mt, List.toArray args)
-
-    let errex mt args = Runtime.Error(mt, List.toArray args)
+    let debug (loc:string) t = info <| sprintf "DEBUG: %s: %A" (loc.ToUpper()) t
 
