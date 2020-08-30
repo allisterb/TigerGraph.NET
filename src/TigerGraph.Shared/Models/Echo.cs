@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TigerGraph.Models
 {
-    public class Echo
+    public class EchoResponse
     {
         public Version version { get; set; }
         public bool error { get; set; }

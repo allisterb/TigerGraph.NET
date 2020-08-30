@@ -6,12 +6,13 @@
     <SharedGUID>308f54f5-177c-413b-9875-c3312ef0563e</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>TigerGraph.Shared</Import_RootNamespace>
+    <Import_RootNamespace>TigerGraph</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Base\Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Runtime.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ApiClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Echo.cs" />
   </ItemGroup>
 </Project>

@@ -21,7 +21,6 @@ namespace TigerGraph
             Configuration = new ConfigurationBuilder()
                     .AddEnvironmentVariables()
                     .Build();
-            HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("SMApp/0.1");
         }
         public Runtime(CancellationToken ct) :base(ct) {}
         public Runtime() : this(Cts.Token) { }
@@ -38,6 +37,10 @@ namespace TigerGraph
         public static IConfigurationRoot Configuration { get; protected set; }
    
         public static HttpClient HttpClient { get; } = new HttpClient();
+        #endregion
+
+        #region Methods
+        public static string Config(string i) => Runtime.Configuration[i];
         #endregion
     }
 }
