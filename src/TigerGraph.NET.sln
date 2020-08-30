@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerGraph.CLI", "TigerGrap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TigerGraph.Lib", "TigerGraph.Lib\TigerGraph.Lib.csproj", "{CC82F5AA-4E7F-49FA-9E5D-4BB850E1A3DD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{9A0B6275-9ECE-4AA6-A27B-C07265105B3D}"
+	ProjectSection(SolutionItems) = preProject
+		..\tg.cmd = ..\tg.cmd
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TigerGraph.Shared\TigerGraph.Shared.projitems*{308f54f5-177c-413b-9875-c3312ef0563e}*SharedItemsImports = 13
