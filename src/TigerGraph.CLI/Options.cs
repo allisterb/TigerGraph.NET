@@ -15,15 +15,14 @@ namespace TigerGraph.CLI
 
     public class RestApiOptions
     {
-        [Option('t', "token", Required = true, HelpText = "Your TigerGraph access token.")]
+        [Option('t', "token", Required = false, HelpText = "Your TigerGraph server instance access token. If none is specified then use the environment variable TG_TOKEN.")]
         public bool Token { get; set; }
+
+        [Option('s', "server", Required = true, HelpText = "Your TigerGraph server instance URL. If none is specified then use the environment variable TG_SERVER_URL.")]
+        public Uri ServerUrl { get; set; }
     }
 
-    [Verb("echo", HelpText = "Ping the server.")]
-    public class EchoOptions : RestApiOptions
-    {
-
-    }
-
+    [Verb("echo", HelpText = "Ping the specified server using the specified access token.")]
+    public class EchoOptions : RestApiOptions {}
 
 }
