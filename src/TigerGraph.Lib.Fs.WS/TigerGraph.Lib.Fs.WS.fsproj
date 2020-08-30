@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Runtime.fs" />
+    <Compile Include="ApiClient.fs" />
     <None Include="wsconfig.json" />
   </ItemGroup>
 
