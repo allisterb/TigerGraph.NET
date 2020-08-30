@@ -1,0 +1,59 @@
+namespace Samples
+
+open WebSharper
+open WebSharper.JavaScript
+open WebSharper.UI.Next
+open WebSharper.UI.Next.Html
+open WebSharper.UI.Next.Client
+
+open FSharp.Data
+
+[<JavaScript>]
+module HelloWorld =
+    // idea taken from http://fsharp.github.io/FSharp.Data/library/JsonProvider.html
+    type GitHub = JsonProvider<"https://api.github.com/repos/intellifactory/websharper/issues">
+
+    let latestIssues = 
+        async {
+            let! samples = GitHub.AsyncGetSamples()
+            return 
+                samples
+                |> Seq.filter (fun issue -> issue.State = "open")
+        }
+
+    let openTime = 300.
+    let Open =
+        Anim.Simple Interpolation.Double Easing.CubicInOut openTime
+
+    let height = 150.
+    let OpenTransition =
+        Trans.Create Open
+        |> Trans.Enter (fun _ -> Open 0.0 height)
+        |> Trans.Exit (fun _ -> Open height 0.0)
+
+    let box content =
+        divAttr [
+            Attr.AnimatedStyle "height" OpenTransition (View.Const height) (fun v -> string v + "px")
+            attr.style "overflow: auto"
+        ] [content]
+
+    let showIf pred doc =
+        pred |> View.Map (fun b -> if b then doc else Doc.Empty) |> Doc.EmbedView
+
+    let Main2 =
+        async {
+            let! issues = latestIssues
+            let issues = issues |> Seq.map (fun issue -> issue, Var.Create false)
+            return
+                issues
+                |> Seq.map (fun (issue, shown) -> 
+                    li [
+                        Doc.Link (sprintf "#%d %s" issue.Number issue.Title) [] (fun () -> Var.Update shown not)
+                        showIf shown.View (defaultArg issue.Body "" |> text |> box)
+                    ] :> Doc)
+                |> ul
+        }
+        |> View.Const
+        |> View.MapAsync id
+        |> Doc.EmbedView
+        |> Doc.RunById "main"

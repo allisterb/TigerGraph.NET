@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TigerGraph.Web.Bridge", "Ti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerGraph.CLI", "TigerGraph.CLI\TigerGraph.CLI.csproj", "{1BBEEAC6-61B6-435A-AE3B-4E20FB02C1C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TigerGraph.Lib", "TigerGraph.Lib\TigerGraph.Lib.csproj", "{CC82F5AA-4E7F-49FA-9E5D-4BB850E1A3DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerGraph.Lib", "TigerGraph.Lib\TigerGraph.Lib.csproj", "{CC82F5AA-4E7F-49FA-9E5D-4BB850E1A3DD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{9A0B6275-9ECE-4AA6-A27B-C07265105B3D}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,6 +18,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{9A0B
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerGraph.Lib.WS", "TigerGraph.Lib.WS\TigerGraph.Lib.WS.csproj", "{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{73F3716A-FB26-4917-BF9F-86AE47A78DFA}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\WebSharperSnippets.txt = ..\docs\WebSharperSnippets.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebSharper", "WebSharper", "{BE70951D-7B32-440F-ACB8-9B9E5A77CE2B}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "TigerGraph.Lib.Fs.WS", "TigerGraph.Lib.Fs.WS\TigerGraph.Lib.Fs.WS.fsproj", "{5F0970B4-510C-425C-A78A-C54F1D3ADE7F}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -45,9 +54,17 @@ Global
 		{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F0970B4-510C-425C-A78A-C54F1D3ADE7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F0970B4-510C-425C-A78A-C54F1D3ADE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F0970B4-510C-425C-A78A-C54F1D3ADE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F0970B4-510C-425C-A78A-C54F1D3ADE7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8BF2A2C0-AB82-4486-9AC2-313617C87F7A} = {BE70951D-7B32-440F-ACB8-9B9E5A77CE2B}
+		{5F0970B4-510C-425C-A78A-C54F1D3ADE7F} = {BE70951D-7B32-440F-ACB8-9B9E5A77CE2B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1144B40A-C699-4636-81B0-D2DF608CC04F}

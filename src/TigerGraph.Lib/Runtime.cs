@@ -22,7 +22,7 @@ namespace TigerGraph
                     .AddEnvironmentVariables()
                     .Build();
         }
-        public Runtime(CancellationToken ct) :base(ct) {}
+        public Runtime(CancellationToken ct) :base(ct) { Type = GetType(); }
         public Runtime() : this(Cts.Token) { }
 
         #endregion
@@ -36,7 +36,7 @@ namespace TigerGraph
 
         public static IConfigurationRoot Configuration { get; protected set; }
    
-        public static HttpClient HttpClient { get; } = new HttpClient();
+        public Type Type { get; }
         #endregion
 
         #region Methods
