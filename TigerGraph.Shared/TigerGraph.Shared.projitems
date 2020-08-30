@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>308f54f5-177c-413b-9875-c3312ef0563e</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>TigerGraph.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Exceptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Logger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Runtime.cs" />
+  </ItemGroup>
+</Project>
