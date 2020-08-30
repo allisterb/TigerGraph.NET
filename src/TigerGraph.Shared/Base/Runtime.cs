@@ -9,8 +9,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if WS
+using WebSharper;
+#endif
+
 namespace TigerGraph.Base
 {
+#if WS
+    [JavaScript]
+#endif
     public abstract class Runtime
     {
         #region Constructors
@@ -21,7 +28,6 @@ namespace TigerGraph.Base
                 throw new InvalidOperationException("A logger is not assigned.");
             }
             CancellationToken = ct;
-            Type = this.GetType();
         }
         public Runtime(): this(Cts.Token) {}
 
@@ -41,8 +47,6 @@ namespace TigerGraph.Base
         public bool Initialized { get; protected set; }
 
         public CancellationToken CancellationToken { get; protected set; }
-
-        public Type Type { get; }
 
         #endregion
 
@@ -76,18 +80,8 @@ namespace TigerGraph.Base
 
         public static void Error(Exception ex, string messageTemplate, params object[] args) => Logger.Error(ex, messageTemplate, args);
 
-        public static Logger.Op Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
+        public static LoggerOp Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
 
-        public static void SetPropsFromDict<T>(T instance, Dictionary<string, object> p)
-        {
-            foreach (PropertyInfo prop in typeof(T).GetProperties())
-            {
-                if (p.ContainsKey(prop.Name) && prop.PropertyType == p[prop.Name].GetType())
-                {
-                    prop.SetValue(instance, p[prop.Name]);
-                }
-            }
-        }
 
         public void ThrowIfNotInitialized()
         {

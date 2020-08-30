@@ -41,6 +41,18 @@ namespace TigerGraph
 
         #region Methods
         public static string Config(string i) => Runtime.Configuration[i];
+
+        public static void SetPropsFromDict<T>(T instance, Dictionary<string, object> p)
+        {
+            foreach (PropertyInfo prop in typeof(T).GetProperties())
+            {
+                if (p.ContainsKey(prop.Name) && prop.PropertyType == p[prop.Name].GetType())
+                {
+                    prop.SetValue(instance, p[prop.Name]);
+                }
+            }
+        }
+
         #endregion
     }
 }

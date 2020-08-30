@@ -1,46 +1,41 @@
 using System;
 
+#if WS
+using WebSharper;
+#endif
+
 namespace TigerGraph
 {
-    public abstract class Logger
+#if WS
+    [JavaScript]
+#endif
+    public abstract class LoggerOp : IDisposable
     {
-        public abstract class Op : IDisposable
+        public LoggerOp(Logger l)
         {
-            public Op(Logger l)
-            {
-                L = l;
-            }
-
-            public Logger L { get; }
-
-            protected bool isCompleted = false;
-
-            protected bool isCancelled = false;
-
-            public abstract void Complete();
-
-            public abstract void Cancel();
-
-            public abstract void Dispose();
+            L = l;
         }
 
-        public bool IsConfigured { get; protected set; } = false;
+        public Logger L; 
 
-        public abstract void Info(string messageTemplate, params object[] args);
+        protected bool isCompleted = false;
 
-        public abstract void Debug(string messageTemplate, params object[] args);
+        protected bool isCancelled = false;
 
-        public abstract void Error(string messageTemplate, params object[] args);
+        public abstract void Complete();
 
-        public abstract void Error(Exception ex, string messageTemplate, params object[] args);
+        public abstract void Cancel();
 
-        public abstract Op Begin(string messageTemplate, params object[] args);
+        public abstract void Dispose();
     }
 
-    public class ConsoleOp: Logger.Op
+
+#if WS
+        [JavaScript]
+#endif
+    public class ConsoleOp : LoggerOp
     {
         public ConsoleOp(ConsoleLogger l) : base(l) { }
-
 
         public override void Complete()
         {
@@ -56,13 +51,35 @@ namespace TigerGraph
 
         public override void Dispose()
         {
-            if(!(isCompleted || isCancelled))
+            if (!(isCompleted || isCancelled))
             {
                 L.Error("Cancelled.");
             }
         }
     }
+
+#if WS
+    [JavaScript]
+#endif
+
+    public abstract class Logger 
+    {
+        public bool IsConfigured { get; protected set; } = false;
+
+        public abstract void Info(string messageTemplate, params object[] args);
+
+        public abstract void Debug(string messageTemplate, params object[] args);
+
+        public abstract void Error(string messageTemplate, params object[] args);
+
+        public abstract void Error(Exception ex, string messageTemplate, params object[] args);
+
+        public abstract LoggerOp Begin(string messageTemplate, params object[] args);
+    }
         
+#if WS
+    [JavaScript]
+#endif
     public class ConsoleLogger : Logger
     {
         public override void Info(string messageTemplate, params object[] args) => Console.WriteLine(messageTemplate, args);
@@ -73,6 +90,7 @@ namespace TigerGraph
 
         public override void Error(Exception ex, string messageTemplate, params object[] args) => Console.WriteLine(messageTemplate, args);
 
-        public override Op Begin(string messageTemplate, params object[] args) => new ConsoleOp(this);
+        public override LoggerOp Begin(string messageTemplate, params object[] args) => new ConsoleOp(this);
     }
+
 }

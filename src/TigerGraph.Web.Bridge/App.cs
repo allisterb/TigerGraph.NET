@@ -11,6 +11,7 @@ namespace TigerGraph.Web.Bridge
             // Write a message to the Console
             Console.WriteLine("Welcome to Bridge.NET");
 
+            
             // After building (Ctrl + Shift + B) this project, 
             // browse to the /bin/Debug or /bin/Release folder.
 
