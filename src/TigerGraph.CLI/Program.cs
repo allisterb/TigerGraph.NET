@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
 using CO = Colorful.Console;
 using Figgle;
 using CommandLine;
@@ -121,11 +122,12 @@ namespace TigerGraph.CLI
                 }
                 Token = token;
                 ServerUrl = url;
+                ApiClient = new ApiClient(Token, ServerUrl);
                 Debug("Token: {0}. Url: {1}", Token, ServerUrl);
             })
             .WithParsed<EchoOptions>(o =>
             {
-                Info("echo");
+
                 Exit(Echo(o).Result);
             });
         }
@@ -134,9 +136,10 @@ namespace TigerGraph.CLI
         #region Methods
         static async Task<ExitResult> Echo(EchoOptions o)
         {
-            
+
+            var r = await ApiClient.Echo();
+            Info("Echo response: {0}", JsonConvert.SerializeObject(r).ToString());
             return ExitResult.SUCCESS;
-            //var api = new Api
         }
         static void PrintLogo()
         {
@@ -179,6 +182,8 @@ namespace TigerGraph.CLI
         static string Token { get; set; }
 
         static Uri ServerUrl { get; set; }
+
+        static ApiClient ApiClient {get; set; }
         #endregion
 
         #region Event Handlers

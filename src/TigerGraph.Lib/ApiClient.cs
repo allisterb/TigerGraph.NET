@@ -17,7 +17,7 @@ namespace TigerGraph
             Token = token ?? throw new ArgumentException("Could not get the TigerGraph access token.");
             BaseUrl = url ?? throw new ArgumentException("Could not get the TigerGraph server URL.");
             RestClient = new RestClient(BaseUrl);
-            RestClient.AddDefaultHeader("Authorization", Token);
+            RestClient.AddDefaultHeader("Authorization", "Bearer " + Token);
             Info("Initialized REST++ client for server URL {0}.", BaseUrl);
             Initialized = true;
         }
@@ -37,7 +37,7 @@ namespace TigerGraph
         public async Task<EchoResponse> Echo()
         {
             ThrowIfNotInitialized();
-            using (var op = Begin("Echo"))
+            using (var op = Begin("Ping server {0}", BaseUrl))
             {
                 var request = new RestRequest("echo", Method.GET);
                 IRestResponse response = await RestClient.ExecuteAsync(request);
