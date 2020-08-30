@@ -6,7 +6,7 @@ namespace TigerGraph
 {
     public class RuntimeNotInitializedException : Exception
     {
-        public RuntimeNotInitializedException(Runtime o) : base($"The {o.Type.Name} runtime object is not initialized.") {}
+        public RuntimeNotInitializedException(Base.Runtime o) : base($"The {o.Type.Name} runtime object is not initialized.") {}
     }
 
 }

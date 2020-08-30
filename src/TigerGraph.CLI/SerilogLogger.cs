@@ -14,7 +14,7 @@ namespace TigerGraph.CLI
             {
                 Config = new LoggerConfiguration().WriteTo.Console();
             }
-            Config = Config.WriteTo.File(logFileName ?? "SMApp.log");
+            Config = Config.WriteTo.File(logFileName ?? "TigerGraph.NET.log");
             if (debug)
             {
                 Config = Config.MinimumLevel.Debug();
@@ -27,7 +27,7 @@ namespace TigerGraph.CLI
             Logger = logger;
         }
 
-        public SerilogLogger() : this(Log.Logger) {}
+        public SerilogLogger() : this(Log.Logger) { }
 
         public LoggerConfiguration Config { get; protected set; }
 
@@ -50,7 +50,7 @@ namespace TigerGraph.CLI
 
     public class SerilogOp : Logger.Op
     {
-        public SerilogOp(SerilogLogger logger, Operation op): base(logger)
+        public SerilogOp(SerilogLogger logger, Operation op) : base(logger)
         {
             Op = op;
         }
@@ -75,6 +75,9 @@ namespace TigerGraph.CLI
         }
 
         protected Operation Op;
-        
+
     }
 }
+
+
+

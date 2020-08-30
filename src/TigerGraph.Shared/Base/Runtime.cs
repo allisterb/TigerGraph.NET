@@ -9,15 +9,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TigerGraph
+namespace TigerGraph.Base
 {
     public abstract class Runtime
     {
         #region Constructors
-        static Runtime()
-        {
-            //HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("SMApp/0.1");
-        }
         public Runtime(CancellationToken ct)
         {
             if (Logger == null)
@@ -32,20 +28,14 @@ namespace TigerGraph
         #endregion
 
         #region Properties
-        //public static DirectoryInfo AssemblyDirectory { get; } = new FileInfo(Assembly.GetEntryAssembly().Location).Directory;
-
-        //public static Version AssemblyVersion { get; } = Assembly.GetEntryAssembly().GetName().Version;
-
-        //public static DirectoryInfo CurrentDirectory { get; } = new DirectoryInfo(Directory.GetCurrentDirectory());
-     
+    
         public static Logger Logger { get; protected set; }
 
         public static CancellationTokenSource Cts { get; } = new CancellationTokenSource();
 
         public static CancellationToken Ct { get; } = Cts.Token;
 
-        
-
+       
         public static string YY = DateTime.Now.Year.ToString().Substring(2, 2);
 
         public bool Initialized { get; protected set; }
@@ -101,7 +91,7 @@ namespace TigerGraph
 
         public void ThrowIfNotInitialized()
         {
-            if (!this.Initialized) throw new ApiNotInitializedException(this);
+            if (!this.Initialized) throw new RuntimeNotInitializedException(this);
         }
         #endregion
     }
