@@ -7,8 +7,8 @@ using TigerGraph.Models;
 
 namespace TigerGraph
 {
-    interface HttpApiClient
+    interface IApiClient
     {
-        Task<EchoResponse> Echo(string token);
+        Task<EchoResponse> Echo();
     }
 }

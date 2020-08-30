@@ -13,8 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TigerGraph.Lib", "TigerGrap
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{9A0B6275-9ECE-4AA6-A27B-C07265105B3D}"
 	ProjectSection(SolutionItems) = preProject
+		..\scripts\endpoints.cmd = ..\scripts\endpoints.cmd
 		..\tg.cmd = ..\tg.cmd
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerGraph.Lib.WS", "TigerGraph.Lib.WS\TigerGraph.Lib.WS.csproj", "{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -38,6 +41,10 @@ Global
 		{CC82F5AA-4E7F-49FA-9E5D-4BB850E1A3DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC82F5AA-4E7F-49FA-9E5D-4BB850E1A3DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC82F5AA-4E7F-49FA-9E5D-4BB850E1A3DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BF2A2C0-AB82-4486-9AC2-313617C87F7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

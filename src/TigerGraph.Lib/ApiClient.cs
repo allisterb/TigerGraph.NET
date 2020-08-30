@@ -9,7 +9,7 @@ using RestSharp;
 using TigerGraph.Models;
 namespace TigerGraph
 {
-    public class ApiClient : Runtime
+    public class ApiClient : Runtime, IApiClient
     {
         #region Constructors
         public ApiClient(string token, Uri url) : base()
