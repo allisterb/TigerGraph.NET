@@ -16,7 +16,19 @@ namespace TigerGraph.Proxy
         {
             var config = new LoggerConfiguration();
             Log.Logger = config.MinimumLevel.Debug().Enrich.FromLogContext().WriteTo.Console().CreateLogger();
-            CreateHostBuilder(args).Build().Run();
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TG_TOKEN")))
+            {
+                Log.Error("The environment variable {0} could not be read.", "TG_TOKEN");
+                return;
+            }
+            else if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TG_SERVER_URL")))
+            {
+                Log.Error("The environment variable {0} could not be read.", "TG_SERVER_URL");
+            }
+            else
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
