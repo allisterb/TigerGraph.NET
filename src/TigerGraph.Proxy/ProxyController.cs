@@ -18,26 +18,18 @@ using AspNetCore.Proxy.Options;
 
 namespace TigerGraph.Proxy
 {
-    public class DefaultController : ControllerBase
+    public class ProxyController : ControllerBase
     {
         private HttpProxyOptions _httpOptions = HttpProxyOptionsBuilder.Instance
         .WithShouldAddForwardedHeaders(false)
-        .WithHttpClientName("MyCustomClient")
-        .WithIntercept(async context =>
+        .WithHttpClientName("TigerGraphClient")
+        .WithIntercept(context =>
         {
-            if (context.Connection.RemotePort == 7777)
-            {
-                context.Response.StatusCode = 300;
-                await context.Response.WriteAsync("I don't like this port, so I am not proxying this request!");
-                return true;
-            }
-
-            return false;
+            return new ValueTask<bool>(false);
         })
         .WithBeforeSend((c, hrm) =>
         {
-            // Set something that is needed for the downstream endpoint.
-            hrm.Headers.Authorization = new AuthenticationHeaderValue("Basic");
+            hrm.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "qsaa6s3i8dhususu952jncku8jtim9b3");
 
             return Task.CompletedTask;
         })
@@ -49,17 +41,18 @@ namespace TigerGraph.Proxy
 
             return Task.CompletedTask;
         })
-        .WithHandleFailure(async (c, e) =>
+        .WithHandleFailure((c, e) =>
         {
+            return Task.CompletedTask;
             // Return a custom error response.
-            c.Response.StatusCode = 403;
-            await c.Response.WriteAsync("Things borked.");
+            //c.Response.StatusCode = 403;
+            //await c.Response.WriteAsync("Things borked.");
         }).Build();
 
         [Route("p/{**rest}")]
-        public Task ProxyCatchAll(string rest)
+        public Task Proxy(string rest)
         {
-            return this.HttpProxyAsync($"https://jsonplaceholder.typicode.com/{rest}");
+            return this.HttpProxyAsync($"https://fss.i.tgcloud.io:9000/{rest}");
         }
     }
 }

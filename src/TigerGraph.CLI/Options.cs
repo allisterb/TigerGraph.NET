@@ -22,7 +22,7 @@ namespace TigerGraph.CLI
         public string ServerUrl { get; set; }
     }
 
-    [Verb("echo", HelpText = "Ping a TigerGraph server instance using the specified server URL and access token.")]
-    public class EchoOptions : RestApiOptions {}
+    [Verb("ping", HelpText = "Ping a TigerGraph server instance using the specified server URL and access token.")]
+    public class PingOptions : RestApiOptions {}
 
 }

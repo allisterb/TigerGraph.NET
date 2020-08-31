@@ -41,7 +41,7 @@ namespace TigerGraph.CLI
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
-            ParserResult<object> result = new Parser().ParseArguments<Options, RestApiOptions, EchoOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, RestApiOptions, PingOptions>(args);
             result.WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
@@ -125,16 +125,15 @@ namespace TigerGraph.CLI
                 ApiClient = new ApiClient(Token, ServerUrl);
                 Debug("Token: {0}. Url: {1}", Token, ServerUrl);
             })
-            .WithParsed<EchoOptions>(o =>
+            .WithParsed<PingOptions>(o =>
             {
-
                 Exit(Echo(o).Result);
             });
         }
         #endregion
 
         #region Methods
-        static async Task<ExitResult> Echo(EchoOptions o)
+        static async Task<ExitResult> Echo(PingOptions o)
         {
 
             var r = await ApiClient.Echo();
@@ -177,7 +176,7 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
-        static Type[] OptionTypes = { typeof(Options), typeof(RestApiOptions), typeof(EchoOptions) };
+        static Type[] OptionTypes = { typeof(Options), typeof(RestApiOptions), typeof(PingOptions) };
 
         static string Token { get; set; }
 
