@@ -23,7 +23,7 @@ namespace TigerGraph.Proxy
             services.AddRouting();
             services.AddProxies();
             services.AddControllers();
-            services.AddHttpClient("TigerGraphClient", c => c.BaseAddress = new Uri("https://fss.i.tgcloud.io:9000/"));
+            services.AddHttpClient("TigerGraphClient", c => c.BaseAddress = new Uri(Environment.GetEnvironmentVariable("TG_SERVER_URL")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,12 +35,7 @@ namespace TigerGraph.Proxy
             }
 
             app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-              
-                app.UseEndpoints(endpoints => endpoints.MapControllers());
-            });
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
     }

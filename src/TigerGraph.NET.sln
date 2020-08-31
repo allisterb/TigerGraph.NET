@@ -33,6 +33,12 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "TigerGraph.Web.WS.SPADemo",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerGraph.Proxy", "TigerGraph.Proxy\TigerGraph.Proxy.csproj", "{13B76F1A-8C28-4DE8-AFD4-5B4C74848BE3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{BA38BAAE-219F-451F-9BC0-3C320CE5B25C}"
+	ProjectSection(SolutionItems) = preProject
+		..\deploy\oc-create-tgproxy-app.cmd = ..\deploy\oc-create-tgproxy-app.cmd
+		..\deploy\oc-deploy-tgproxy-build.cmd = ..\deploy\oc-deploy-tgproxy-build.cmd
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TigerGraph.Shared\TigerGraph.Shared.projitems*{308f54f5-177c-413b-9875-c3312ef0563e}*SharedItemsImports = 13

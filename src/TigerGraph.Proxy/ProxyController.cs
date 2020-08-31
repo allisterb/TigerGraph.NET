@@ -52,8 +52,8 @@ namespace TigerGraph.Proxy
         [Route("p/{**rest}")]
         public Task Proxy(string rest)
         {
-            log.LogInformation("Proxying request {0} to {1}...", rest, $"{Environment.GetEnvironmentVariable("TG_SERVER_URL")}/{rest}");
-            return this.HttpProxyAsync($"{Environment.GetEnvironmentVariable("TG_SERVER_URL")}/{rest}", _httpOptions);
+            log.LogInformation("Proxying request {0} to {1}...", rest, $"{Environment.GetEnvironmentVariable("TG_SERVER_URL")}{rest}");
+            return this.HttpProxyAsync($"{Environment.GetEnvironmentVariable("TG_SERVER_URL")}{rest}", _httpOptions);
         }
     }
 }
