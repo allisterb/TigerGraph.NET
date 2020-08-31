@@ -1,6 +1,7 @@
 namespace TigerGraph.Web.WS.SPADemo
 
 open System
+
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
@@ -8,7 +9,9 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+
 open WebSharper.AspNetCore
+open Serilog
 
 type Startup() =
 
@@ -26,12 +29,15 @@ type Startup() =
                 context.Response.WriteAsync("Page not found"))
 
 module Program =
-
     [<EntryPoint>]
     let main args =
-        WebHost
+        let config = new LoggerConfiguration()
+        Log.Logger <- config.MinimumLevel.Debug().Enrich.FromLogContext().WriteTo.Console().CreateLogger()
+        do WebHost
             .CreateDefaultBuilder(args)
+            .UseSerilog()
             .UseStartup<Startup>()
             .Build()
             .Run()
+        do Log.CloseAndFlush()
         0

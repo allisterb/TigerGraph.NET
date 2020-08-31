@@ -21,6 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerGraph.Lib.WS", "TigerG
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{73F3716A-FB26-4917-BF9F-86AE47A78DFA}"
 	ProjectSection(SolutionItems) = preProject
+		..\scripts\endpoints.cmd = ..\scripts\endpoints.cmd
 		..\docs\WebSharperSnippets.txt = ..\docs\WebSharperSnippets.txt
 	EndProjectSection
 EndProject

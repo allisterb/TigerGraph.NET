@@ -3,7 +3,7 @@ using Serilog;
 using SerilogTimings;
 using SerilogTimings.Extensions;
 
-namespace TigerGraph.CLI
+namespace TigerGraph
 {
     public class SerilogLogger : Logger
     {

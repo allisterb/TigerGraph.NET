@@ -10,8 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Runtime.fs" />
-    <Compile Include="ApiClient.fs" />
+    <Compile Include="ClientUtils.fs" />
     <None Include="wsconfig.json" />
   </ItemGroup>
 
