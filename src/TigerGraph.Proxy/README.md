@@ -11,5 +11,6 @@ You'll need the .NET Core 3.1 SDK [from](https://dotnet.microsoft.com/download) 
 
 * Clone the TigerGraph.NET repo and run `dotnet build` in the TigerGraph.Proxy sub-directory. 
 * Set the `TG_TOKEN` and `TG_SERVER_URL` variables.
-From this directory you can then run `dotnet run bin\Debug\netcoreapp3.1\TigerGraph.Proxy.exe --urls=http://localhost:5001/`.
+* From the proxy sub-directory run `dotnet run bin\Debug\netcoreapp3.1\TigerGraph.Proxy.exe --urls=http://localhost:5001/`.
 Change the port number if required. Press Ctrl-C to stop the server.
+* You can then run something like `curl -i --location --request GET "http://localhost:5001/p/echo"` and the server with return the JSON data from the TG server at `TG_SERVER_URL_` together with CORS headers. It will also make `echo` calls to the TG server every 15mins.
