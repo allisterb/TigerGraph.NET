@@ -43,6 +43,7 @@ namespace TigerGraph.CLI
             }
             PrintLogo();
             ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions>(args);
+            #region Print options help
             result.WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
@@ -103,23 +104,10 @@ namespace TigerGraph.CLI
                     Exit(ExitResult.INVALID_OPTIONS);
                 }
             })
-            .WithParsed<ApiOptions>(o => {
-                var token = string.IsNullOrEmpty(o.Token) ? Environment.GetEnvironmentVariable("TG_TOKEN") : o.Token;
-                var u = string.IsNullOrEmpty(o.RestServerUrl) ? Environment.GetEnvironmentVariable("TG_REST_SERVER_URL") : o.RestServerUrl;
-                if (string.IsNullOrEmpty(u))
-                {
-                    Error("The server URL parameter was not specified and the environment variable TG_SERVER_URL does not exist or is empty.");
-                    Exit(ExitResult.INVALID_OPTIONS);
-                }
-                if (!Uri.TryCreate(u, UriKind.Absolute, out Uri url))
-                {
-                    Error("The server URL value {0} is not a valid absolute URI.", u);
-                    Exit(ExitResult.INVALID_OPTIONS);
-                }
-                Token = token;
-                ServerUrl = url;
-                ApiClient = new ApiClient(Token, ServerUrl);
-                Debug("Token: {0}. Url: {1}", Token, ServerUrl);
+            #endregion
+            .WithParsed<ApiOptions>(o =>
+            {
+                ApiClient = new ApiClient(GetToken(o), GetRestServerUrl(o), GetGsqlServerUrl(o), GetUser(o), GetPass(o));
             })
             .WithParsed<PingOptions>(o =>
             {
@@ -137,7 +125,8 @@ namespace TigerGraph.CLI
                 Error("The token parameter was not specified and the environment variable TG_TOKEN does not exist or is empty.");
                 Exit(ExitResult.INVALID_OPTIONS);
             }
-            return o.Token;
+            Debug("Token is: ", token);
+            return token;
         }
 
         static string GetUser(ApiOptions o)
@@ -148,18 +137,18 @@ namespace TigerGraph.CLI
                 Error("The user parameter was not specified and the environment variable TG_USER does not exist or is empty.");
                 Exit(ExitResult.INVALID_OPTIONS);
             }
-            return o.User;
+            return user;
         }
 
         static string GetPass(ApiOptions o)
         {
-            var pass = string.IsNullOrEmpty(o.GsqpServerUrl) ? Environment.GetEnvironmentVariable("TG_PASS") : o.Pass;
+            var pass = string.IsNullOrEmpty(o.GsqlServerUrl) ? Environment.GetEnvironmentVariable("TG_PASS") : o.Pass;
             if (string.IsNullOrEmpty(pass))
             {
                 Error("The user password parameter was not specified and the environment variable TG_PASS does not exist or is empty.");
                 Exit(ExitResult.INVALID_OPTIONS);
             }
-            return o.Pass;
+            return pass;
         }
 
         static Uri GetRestServerUrl(ApiOptions o)
@@ -182,7 +171,7 @@ namespace TigerGraph.CLI
 
         static Uri GetGsqlServerUrl(ApiOptions o)
         {
-            var gurl = string.IsNullOrEmpty(o.GsqpServerUrl) ? Environment.GetEnvironmentVariable("TG_GSQL_SERVER_URL") : o.GsqpServerUrl;
+            var gurl = string.IsNullOrEmpty(o.GsqlServerUrl) ? Environment.GetEnvironmentVariable("TG_GSQL_SERVER_URL") : o.GsqlServerUrl;
             if (string.IsNullOrEmpty(gurl))
             {
                 Error("The GSQL server URL parameter was not specified and the environment variable TG_GSQL_SERVER_URL does not exist or is empty.");
@@ -198,10 +187,8 @@ namespace TigerGraph.CLI
             else return u;
         }
 
-
         static async Task<ExitResult> Echo(PingOptions o)
         {
-
             var r = await ApiClient.Echo();
             Info("Echo response: {0}", JsonConvert.SerializeObject(r).ToString());
             return ExitResult.SUCCESS;
@@ -244,10 +231,6 @@ namespace TigerGraph.CLI
 
         #region Properties
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions) };
-
-        static string Token { get; set; }
-
-        static Uri ServerUrl { get; set; }
 
         static ApiClient ApiClient {get; set; }
         #endregion

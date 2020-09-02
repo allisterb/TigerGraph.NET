@@ -340,3 +340,4 @@ ASALocalRun/
 healthchecksdb
 /src/TigerGraph.Proxy/Properties/launchSettings.json
 /gsql_client.jar
+/src/TigerGraph.CLI/Properties/launchSettings.json

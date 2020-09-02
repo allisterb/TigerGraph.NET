@@ -12,11 +12,13 @@ namespace TigerGraph.Base
     public abstract class ApiClient : Runtime, IApiClient
     {
         #region Constructors
-        public ApiClient(string token, Uri restServerUrl, Uri gsqlServerUrl) : base()
+        public ApiClient(string token, Uri restServerUrl, Uri gsqlServerUrl, string user, string pass) : base()
         {
             Token = token ?? throw new ArgumentException("Could not get the TigerGraph access token.");
             RestServerUrl = restServerUrl ?? throw new ArgumentException("Could not get the TigerGraph REST++ server URL.");
             GsqlServerUrl = restServerUrl ?? throw new ArgumentException("Could not get the TigerGraph GSQL server URL.");
+            User = user ?? throw new ArgumentException("Could not get the TigerGraph user name.");
+            Pass = pass ?? throw new ArgumentException("Could not get the TigerGraph user password.");
             Info("Initialized REST++ client for {0} and GSQL client for {0}.", RestServerUrl, GsqlServerUrl);
         }
         #endregion
@@ -33,6 +35,10 @@ namespace TigerGraph.Base
         public Uri RestServerUrl { get; set; }
 
         public Uri GsqlServerUrl { get; set; }
+        
+        public string User { get; set; }
+
+        public string Pass { get; set; }
         #endregion
 
         #region Methods

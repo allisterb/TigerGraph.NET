@@ -22,7 +22,7 @@ namespace TigerGraph.CLI
         public string RestServerUrl { get; set; }
 
         [Option('q', "gsql", Required = false, HelpText = "Your TigerGraph REST++ server instance URL. If none is specified then use the environment variable TG_GSQL_SERVER_URL.")]
-        public string GsqpServerUrl { get; set; }
+        public string GsqlServerUrl { get; set; }
 
         [Option('u', "user", Required = false, HelpText = "Your TigerGraph server user name. If none is specified then use the environment variable TG_USR.")]
         public string User { get; set; }

@@ -27,7 +27,7 @@ namespace TigerGraph
                     .AddEnvironmentVariables()
                     .Build();
         }
-        public ApiClient(string token, Uri restServerUrl, Uri gsqlServerUrl) : base(token, restServerUrl, gsqlServerUrl)
+        public ApiClient(string token, Uri restServerUrl, Uri gsqlServerUrl, string user, string pass) : base(token, restServerUrl, gsqlServerUrl, user, pass)
         {
             RestClient = new RestClient(RestServerUrl);
             RestClient.AddDefaultHeader("Authorization", "Bearer " + Token);
@@ -38,7 +38,7 @@ namespace TigerGraph
             Initialized = true;
         }
 
-        public ApiClient() :  this(Config("TG_Token"), new Uri(Config("TG_REST_SERVER_URL")), new Uri(Config("TG_GSQL_SERVER_URL"))) {}
+        public ApiClient() :  this(Config("TG_Token"), GetUri(Config("TG_REST_SERVER_URL")), GetUri(Config("TG_GSQL_SERVER_URL")), Config("TG_USER"), Config("TG_PASS")) {}
         #endregion
 
         #region Implemented members
@@ -79,7 +79,14 @@ namespace TigerGraph
         #endregion
 
         #region Methods
-
+        static Uri GetUri(string u)
+        {
+            if (!Uri.TryCreate(u, UriKind.Absolute, out Uri uri))
+            {
+                throw new ArgumentException($"The string {u} is not a valid URI.");
+            }
+            else return uri;
+        }
         #endregion
     }
 }
