@@ -42,7 +42,7 @@ namespace TigerGraph.CLI
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
-            ParserResult<object> result = new Parser().ParseArguments<Options, RestApiOptions, PingOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions>(args);
             result.WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
@@ -103,14 +103,9 @@ namespace TigerGraph.CLI
                     Exit(ExitResult.INVALID_OPTIONS);
                 }
             })
-            .WithParsed<RestApiOptions>(o => {
+            .WithParsed<ApiOptions>(o => {
                 var token = string.IsNullOrEmpty(o.Token) ? Environment.GetEnvironmentVariable("TG_TOKEN") : o.Token;
-                if (string.IsNullOrEmpty(token))
-                {
-                    Error("The token parameter was not specified and the environment variable TG_TOKEN does not exist or is empty.");
-                    Exit(ExitResult.INVALID_OPTIONS);
-                }
-                var u = string.IsNullOrEmpty(o.ServerUrl) ? Environment.GetEnvironmentVariable("TG_SERVER_URL") : o.ServerUrl;
+                var u = string.IsNullOrEmpty(o.RestServerUrl) ? Environment.GetEnvironmentVariable("TG_REST_SERVER_URL") : o.RestServerUrl;
                 if (string.IsNullOrEmpty(u))
                 {
                     Error("The server URL parameter was not specified and the environment variable TG_SERVER_URL does not exist or is empty.");
@@ -134,6 +129,76 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Methods
+        static string GetToken(ApiOptions o)
+        {
+            var token = string.IsNullOrEmpty(o.Token) ? Environment.GetEnvironmentVariable("TG_TOKEN") : o.Token;
+            if (string.IsNullOrEmpty(token))
+            {
+                Error("The token parameter was not specified and the environment variable TG_TOKEN does not exist or is empty.");
+                Exit(ExitResult.INVALID_OPTIONS);
+            }
+            return o.Token;
+        }
+
+        static string GetUser(ApiOptions o)
+        {
+            var user = string.IsNullOrEmpty(o.User) ? Environment.GetEnvironmentVariable("TG_USER") : o.User;
+            if (string.IsNullOrEmpty(user))
+            {
+                Error("The user parameter was not specified and the environment variable TG_USER does not exist or is empty.");
+                Exit(ExitResult.INVALID_OPTIONS);
+            }
+            return o.User;
+        }
+
+        static string GetPass(ApiOptions o)
+        {
+            var pass = string.IsNullOrEmpty(o.GsqpServerUrl) ? Environment.GetEnvironmentVariable("TG_PASS") : o.Pass;
+            if (string.IsNullOrEmpty(pass))
+            {
+                Error("The user password parameter was not specified and the environment variable TG_PASS does not exist or is empty.");
+                Exit(ExitResult.INVALID_OPTIONS);
+            }
+            return o.Pass;
+        }
+
+        static Uri GetRestServerUrl(ApiOptions o)
+        {
+            var url = string.IsNullOrEmpty(o.RestServerUrl) ? Environment.GetEnvironmentVariable("TG_REST_SERVER_URL") : o.RestServerUrl;
+            if (string.IsNullOrEmpty(url))
+            {
+                Error("The REST++ server URL parameter was not specified and the environment variable TG_REST_SERVER_URL does not exist or is empty.");
+                Exit(ExitResult.INVALID_OPTIONS);
+                return null;
+            }
+            else if (!Uri.TryCreate(url, UriKind.Absolute, out Uri u))
+            {
+                Error("The REST++ server URL parameter is not a valid URI: {0}.", url);
+                Exit(ExitResult.INVALID_OPTIONS);
+                return null;
+            }
+            else return u;
+        }
+
+        static Uri GetGsqlServerUrl(ApiOptions o)
+        {
+            var gurl = string.IsNullOrEmpty(o.GsqpServerUrl) ? Environment.GetEnvironmentVariable("TG_GSQL_SERVER_URL") : o.GsqpServerUrl;
+            if (string.IsNullOrEmpty(gurl))
+            {
+                Error("The GSQL server URL parameter was not specified and the environment variable TG_GSQL_SERVER_URL does not exist or is empty.");
+                Exit(ExitResult.INVALID_OPTIONS);
+                return null;
+            }
+            else if (!Uri.TryCreate(gurl, UriKind.Absolute, out Uri u))
+            {
+                Error("The GSQL server URL parameter is not a valid URI: {0}.", gurl);
+                Exit(ExitResult.INVALID_OPTIONS);
+                return null;
+            }
+            else return u;
+        }
+
+
         static async Task<ExitResult> Echo(PingOptions o)
         {
 
@@ -146,6 +211,7 @@ namespace TigerGraph.CLI
             CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
             CO.WriteLine("v{0}", ApiClient.AssemblyVersion.ToString(3), Color.Blue);
         }
+
 
         public static void Exit(ExitResult result)
         {
@@ -177,7 +243,7 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
-        static Type[] OptionTypes = { typeof(Options), typeof(RestApiOptions), typeof(PingOptions) };
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions) };
 
         static string Token { get; set; }
 
