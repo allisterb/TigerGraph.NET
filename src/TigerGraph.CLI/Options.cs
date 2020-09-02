@@ -43,7 +43,7 @@ namespace TigerGraph.CLI
     [Verb("schema", HelpText = "Get the schema of the specified graph.")]
     public class SchemaOptions : ApiOptions 
     {
-        [Option('g', "graph", Required = true, Default = "MyGraph", HelpText = "The name of the graph.")]
+        [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph.")]
         public string Graph { get; set; }
     }
 

@@ -17,5 +17,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IApiClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\EchoRespons.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Endpoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Schema.cs" />
   </ItemGroup>
 </Project>

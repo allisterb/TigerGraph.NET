@@ -42,7 +42,7 @@ namespace TigerGraph.CLI
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions>(args);
             #region Print options help
             result.WithNotParsed((IEnumerable<Error> errors) =>
             {
@@ -116,11 +116,43 @@ namespace TigerGraph.CLI
             .WithParsed<EndpointsOptions>(o =>
             {
                 Exit(Endpoints(o).Result);
+            })
+            .WithParsed<SchemaOptions>(o =>
+            {
+                Exit(Schema(o).Result);
             });
         }
         #endregion
 
         #region Methods
+        static async Task<ExitResult> Echo(PingOptions o)
+        {
+            var r = await ApiClient.Echo();
+            Info("Echo response: {0}", JsonConvert.SerializeObject(r).ToString());
+            return ExitResult.SUCCESS;
+        }
+
+        static async Task<ExitResult> Endpoints(EndpointsOptions o)
+        {
+            var r = await ApiClient.Endpoints();
+            Info("Received {0} endpoints from {1}: {2}", r.Count, o.RestServerUrl, r.Keys);
+            return ExitResult.SUCCESS;
+        }
+
+        static async Task<ExitResult> Schema(SchemaOptions o)
+        {
+            var r = await ApiClient.Schema(o.Graph);
+            if (!r.error)
+            {
+                Info("Received {0} vertex types and {1} edge types for graph {2} from {3}.", r.results.VertexTypes.Length, r.results.EdgeTypes.Length, o.Graph, GetGsqlServerUrl(o));
+            }
+            else
+            {
+                Error("Error occurred retrieving schema for graph {0} from {1}: {2}.", o.Graph, o.GsqlServerUrl, r.message);
+            }
+            return ExitResult.SUCCESS;
+        }
+
         static string GetToken(ApiOptions o)
         {
             var token = string.IsNullOrEmpty(o.Token) ? Environment.GetEnvironmentVariable("TG_TOKEN") : o.Token;
@@ -191,19 +223,6 @@ namespace TigerGraph.CLI
             else return u;
         }
 
-        static async Task<ExitResult> Echo(PingOptions o)
-        {
-            var r = await ApiClient.Echo();
-            Info("Echo response: {0}", JsonConvert.SerializeObject(r).ToString());
-            return ExitResult.SUCCESS;
-        }
-
-        static async Task<ExitResult> Endpoints(EndpointsOptions o)
-        {
-            var r = await ApiClient.Endpoints();
-            Info("Received {0} endpoints from {1}: {2}", r.Count, o.RestServerUrl, r.Keys);
-            return ExitResult.SUCCESS;
-        }
         static void PrintLogo()
         {
             CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
@@ -219,7 +238,6 @@ namespace TigerGraph.CLI
                 Cts.Cancel();
                 Cts.Dispose();
             }
-
             Environment.Exit((int)result);
         }
 

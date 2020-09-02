@@ -64,6 +64,18 @@ namespace TigerGraph.Base
                 return response;
             }
         }
+
+        public async Task<SchemaResult> Schema(string graphName)
+        {
+            FailIfNotInitialized();
+            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
+            {
+
+                var response = await GsqlHttpGetAsync<SchemaResult>("gsqlserver/gsql/schema/?graph=" + graphName);
+                op.Complete();
+                return response;
+            }
+        }
         #endregion
     }
 }
