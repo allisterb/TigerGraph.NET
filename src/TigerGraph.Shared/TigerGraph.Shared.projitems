@@ -9,11 +9,12 @@
     <Import_RootNamespace>TigerGraph</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Base\ApiClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Runtime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ApiClient.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Echo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IApiClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\EchoRespons.cs" />
   </ItemGroup>
 </Project>

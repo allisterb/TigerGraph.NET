@@ -13,6 +13,7 @@ using CO = Colorful.Console;
 using Figgle;
 using CommandLine;
 using CommandLine.Text;
+
 namespace TigerGraph.CLI
 {
     #region Enums
@@ -26,7 +27,7 @@ namespace TigerGraph.CLI
     }
     #endregion
 
-    class Program : Runtime
+    class Program : Base.Runtime
     {
         #region Entry point
         static void Main(string[] args)
@@ -143,7 +144,7 @@ namespace TigerGraph.CLI
         static void PrintLogo()
         {
             CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
-            CO.WriteLine("v{0}", AssemblyVersion.ToString(3), Color.Blue);
+            CO.WriteLine("v{0}", ApiClient.AssemblyVersion.ToString(3), Color.Blue);
         }
 
         public static void Exit(ExitResult result)

@@ -9,6 +9,6 @@ namespace TigerGraph
 {
     interface IApiClient
     {
-        Task<EchoResponse> Echo();
+        Task<T> RestHttpGetAsync<T>(string query);
     }
 }

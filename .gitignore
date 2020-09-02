@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /src/TigerGraph.Proxy/Properties/launchSettings.json
+/gsql_client.jar

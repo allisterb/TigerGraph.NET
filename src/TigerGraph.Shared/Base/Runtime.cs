@@ -30,7 +30,6 @@ namespace TigerGraph.Base
             CancellationToken = ct;
         }
         public Runtime(): this(Cts.Token) {}
-
         #endregion
 
         #region Properties
@@ -41,7 +40,6 @@ namespace TigerGraph.Base
 
         public static CancellationToken Ct { get; } = Cts.Token;
 
-       
         public static string YY = DateTime.Now.Year.ToString().Substring(2, 2);
 
         public bool Initialized { get; protected set; }
@@ -83,7 +81,7 @@ namespace TigerGraph.Base
         public static Logger.Op Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
 
 
-        public void ThrowIfNotInitialized()
+        public void FailIfNotInitialized()
         {
             if (!this.Initialized) throw new RuntimeNotInitializedException(this);
         }
