@@ -34,4 +34,17 @@ namespace TigerGraph.CLI
     [Verb("ping", HelpText = "Ping a TigerGraph server instance using the specified server URL and access token.")]
     public class PingOptions : ApiOptions {}
 
+    [Verb("endpoints", HelpText = "Get the endpoints of the specified server.")]
+    public class EndpointsOptions : ApiOptions
+    {
+
+    }
+
+    [Verb("schema", HelpText = "Get the schema of the specified graph.")]
+    public class SchemaOptions : ApiOptions 
+    {
+        [Option('g', "graph", Required = true, Default = "MyGraph", HelpText = "The name of the graph.")]
+        public string Graph { get; set; }
+    }
+
 }

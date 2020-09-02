@@ -16,17 +16,17 @@ namespace TigerGraph.Base
         {
             Token = token ?? throw new ArgumentException("Could not get the TigerGraph access token.");
             RestServerUrl = restServerUrl ?? throw new ArgumentException("Could not get the TigerGraph REST++ server URL.");
-            GsqlServerUrl = restServerUrl ?? throw new ArgumentException("Could not get the TigerGraph GSQL server URL.");
+            GsqlServerUrl = gsqlServerUrl ?? throw new ArgumentException("Could not get the TigerGraph GSQL server URL.");
             User = user ?? throw new ArgumentException("Could not get the TigerGraph user name.");
             Pass = pass ?? throw new ArgumentException("Could not get the TigerGraph user password.");
-            Info("Initialized REST++ client for {0} and GSQL client for {0}.", RestServerUrl, GsqlServerUrl);
+            Info("Initialized REST++ client for {0} and GSQL client for {1}.", RestServerUrl, GsqlServerUrl);
         }
         #endregion
 
         #region Abstract members
         public abstract Task<T> RestHttpGetAsync<T>(string query);
 
-        public abstract Task<T> RestGsqlGetAsync<T>(string query);
+        public abstract Task<T> GsqlHttpGetAsync<T>(string query);
         #endregion
 
         #region Properties
@@ -48,6 +48,18 @@ namespace TigerGraph.Base
             using (var op = Begin("Ping server {0}", RestServerUrl))
             {
                 var response = await RestHttpGetAsync<EchoResponse>("echo");
+                op.Complete();
+                return response;
+            }
+        }
+
+        public async Task<Dictionary<string, EndPointParameter>> Endpoints()
+        {
+            FailIfNotInitialized();
+            using (var op = Begin("Get endpoints from server {0}", RestServerUrl))
+            {
+
+                var response = await RestHttpGetAsync<Dictionary<string, EndPointParameter>>("endpoints?builtin=true&dynamic=true&static=true");
                 op.Complete();
                 return response;
             }

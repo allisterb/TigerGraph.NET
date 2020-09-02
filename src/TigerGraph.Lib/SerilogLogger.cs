@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Serilog;
 using SerilogTimings;
 using SerilogTimings.Extensions;
@@ -33,14 +34,19 @@ namespace TigerGraph
 
         public ILogger Logger { get; protected set; }
 
+        [DebuggerStepThrough]
         public override void Info(string messageTemplate, params object[] args) => Logger.Information(messageTemplate, args);
 
+        [DebuggerStepThrough]
         public override void Debug(string messageTemplate, params object[] args) => Logger.Debug(messageTemplate, args);
 
+        [DebuggerStepThrough]
         public override void Error(string messageTemplate, params object[] args) => Logger.Error(messageTemplate, args);
 
+        [DebuggerStepThrough]
         public override void Error(Exception ex, string messageTemplate, params object[] args) => Logger.Error(ex, messageTemplate, args);
 
+        [DebuggerStepThrough]
         public override Op Begin(string messageTemplate, params object[] args)
         {
             Info(messageTemplate + "...", args);
@@ -55,12 +61,14 @@ namespace TigerGraph
             Op = op;
         }
 
+        [DebuggerStepThrough]
         public override void Cancel()
         {
             Op.Cancel();
             isCancelled = true;
         }
 
+        [DebuggerStepThrough]
         public override void Complete()
         {
             Op.Complete();

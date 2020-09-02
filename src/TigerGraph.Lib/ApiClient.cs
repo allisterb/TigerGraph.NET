@@ -14,8 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
 
-using TigerGraph.Models;
-
 namespace TigerGraph
 {
     public class ApiClient : Base.ApiClient
@@ -33,6 +31,8 @@ namespace TigerGraph
             RestClient.AddDefaultHeader("Authorization", "Bearer " + Token);
             Info("Initialized REST++ client authentication.");
             GsqlClient = new RestClient(GsqlServerUrl);
+            GsqlClient.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator(User, Pass);
+            Info("Initialized GSQL client authentication.");
             Initialized = true;
         }
 
@@ -54,9 +54,22 @@ namespace TigerGraph
             }
         }
 
-        public override Task<T> RestGsqlGetAsync<T>(string query)
+        public override async Task<T> GsqlHttpGetAsync<T>(string query)
         {
-            throw new NotImplementedException();
+            var request = new RestRequest(query, Method.GET);
+            IRestResponse response = await GsqlClient.ExecuteAsync(request);
+            if (response.ErrorException != null)
+            {
+                throw response.ErrorException;
+            }
+            else if (!response.IsSuccessful)
+            {
+                throw new Exception($"HTTP request to GSQL server at {GsqlServerUrl} was not successfule: {response.ErrorMessage}");
+            }
+            else
+            {
+                return JsonConvert.DeserializeObject<T>(response.Content);
+            }
         }
         #endregion
 

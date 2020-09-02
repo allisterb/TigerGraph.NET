@@ -42,7 +42,7 @@ namespace TigerGraph.CLI
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions>(args);
             #region Print options help
             result.WithNotParsed((IEnumerable<Error> errors) =>
             {
@@ -112,6 +112,10 @@ namespace TigerGraph.CLI
             .WithParsed<PingOptions>(o =>
             {
                 Exit(Echo(o).Result);
+            })
+            .WithParsed<EndpointsOptions>(o =>
+            {
+                Exit(Endpoints(o).Result);
             });
         }
         #endregion
@@ -193,6 +197,13 @@ namespace TigerGraph.CLI
             Info("Echo response: {0}", JsonConvert.SerializeObject(r).ToString());
             return ExitResult.SUCCESS;
         }
+
+        static async Task<ExitResult> Endpoints(EndpointsOptions o)
+        {
+            var r = await ApiClient.Endpoints();
+            Info("Received {0} endpoints from {1}: {2}", r.Count, o.RestServerUrl, r.Keys);
+            return ExitResult.SUCCESS;
+        }
         static void PrintLogo()
         {
             CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
@@ -230,7 +241,7 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
-        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions) };
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions) };
 
         static ApiClient ApiClient {get; set; }
         #endregion
