@@ -31,10 +31,8 @@ namespace TigerGraph
         {
             RestClient = new RestClient(RestServerUrl);
             RestClient.AddDefaultHeader("Authorization", "Bearer " + Token);
-            Info("Initialized REST++ client authentication for server URL {0}.", RestServerUrl);
+            Info("Initialized REST++ client authentication.");
             GsqlClient = new RestClient(GsqlServerUrl);
-            GsqlClient.AddDefaultHeader("Authorization", "Bearer " + Token);
-            Info("Initialized GSQL client authentication for server URL {0}.", GsqlServerUrl);
             Initialized = true;
         }
 
@@ -44,7 +42,7 @@ namespace TigerGraph
         #region Implemented members
         public override async Task<T> RestHttpGetAsync<T>(string query)
         {
-            var request = new RestRequest("echo", Method.GET);
+            var request = new RestRequest(query, Method.GET);
             IRestResponse response = await RestClient.ExecuteAsync(request);
             if (response.ErrorException != null)
             {
@@ -79,7 +77,7 @@ namespace TigerGraph
         #endregion
 
         #region Methods
-        static Uri GetUri(string u)
+        private static Uri GetUri(string u)
         {
             if (!Uri.TryCreate(u, UriKind.Absolute, out Uri uri))
             {
