@@ -42,9 +42,34 @@ namespace TigerGraph.CLI
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions>(args);
+
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions>(args);
+            result.WithParsed<ApiOptions>(o =>
+            {
+                ApiClient = new ApiClient(GetToken(o), GetRestServerUrl(o), GetGsqlServerUrl(o), GetUser(o), GetPass(o));
+            })
+            .WithParsed<PingOptions>(o =>
+            {
+                Exit(Echo(o).Result);
+            })
+            .WithParsed<EndpointsOptions>(o =>
+            {
+                Exit(Endpoints(o).Result);
+            })
+            .WithParsed<SchemaOptions>(o =>
+            {
+                Exit(Schema(o).Result);
+            })
+            .WithParsed<VerticesOptions>(o =>
+            {
+                Exit(Vertices(o).Result);
+            })
+            .WithParsed<EdgesOptions>(o =>
+            {
+                Exit(Edges(o).Result);
+            })
             #region Print options help
-            result.WithNotParsed((IEnumerable<Error> errors) =>
+            .WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
                 help.Copyright = string.Empty;
@@ -103,28 +128,8 @@ namespace TigerGraph.CLI
                     Info(help);
                     Exit(ExitResult.INVALID_OPTIONS);
                 }
-            })
-            #endregion
-            .WithParsed<ApiOptions>(o =>
-            {
-                ApiClient = new ApiClient(GetToken(o), GetRestServerUrl(o), GetGsqlServerUrl(o), GetUser(o), GetPass(o));
-            })
-            .WithParsed<PingOptions>(o =>
-            {
-                Exit(Echo(o).Result);
-            })
-            .WithParsed<EndpointsOptions>(o =>
-            {
-                Exit(Endpoints(o).Result);
-            })
-            .WithParsed<SchemaOptions>(o =>
-            {
-                Exit(Schema(o).Result);
-            })
-            .WithParsed<VerticesOptions>(o =>
-            {
-                Exit(Vertices(o).Result);
             });
+            #endregion
         }
         #endregion
 
@@ -200,11 +205,11 @@ namespace TigerGraph.CLI
             {
                 if (!string.IsNullOrEmpty(o.Id))
                 {
-                    Info("{0} vertices:\n{1}}", o.Vertex, JsonConvert.SerializeObject(r.results));
+                    Info("{0} vertex with id {1}:\n{2}}", o.Vertex, o.Id, JsonConvert.SerializeObject(r.results));
                 }
                 else
                 {
-                    Info("{0} vertex with id {1}:\n{2}}", o.Vertex, o.Id, JsonConvert.SerializeObject(r.results));
+                    Info("{0} vertices:\n{1}}", o.Vertex, JsonConvert.SerializeObject(r.results));
                 }
             }
             else
@@ -212,8 +217,28 @@ namespace TigerGraph.CLI
                 Error("Error occurred retrieving {0} vertex data in graph {1} from {2}: {3}.", o.Vertex, o.Graph, o.GsqlServerUrl, r.message);
             }
             return ExitResult.SUCCESS;
-        }        
+        }
 
+        static async Task<ExitResult> Edges(EdgesOptions o)
+        {
+            var r = await ApiClient.Edges(o.Graph, o.Source, o.Id);
+            if (!r.error)
+            {
+                if (string.IsNullOrEmpty(o.Edge) && string.IsNullOrEmpty(o.Target) && string.IsNullOrEmpty(o.Tid))
+                {
+                    Info("All edges from source {0} vertex with id {1}:\n{2}}", o.Source, o.Id, JsonConvert.SerializeObject(r.results));
+                }
+                else
+                {
+                    Info("{0} vertices:\n{1}}", o.Source, JsonConvert.SerializeObject(r.results));
+                }
+            }
+            else
+            {
+                Error("Error occurred retrieving {0} edge data in graph {1} from {2}: {3}.", o.Edge, o.Graph, o.GsqlServerUrl, r.message);
+            }
+            return ExitResult.SUCCESS;
+        }
         #region Get parameters
         static string GetToken(ApiOptions o)
         {
@@ -331,7 +356,7 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
-        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions) };
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions) };
 
         static ApiClient ApiClient {get; set; }
         #endregion

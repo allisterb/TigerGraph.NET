@@ -50,7 +50,7 @@ namespace TigerGraph.CLI
         public string Edge { get; set; }
     }
 
-    [Verb("vertices", HelpText = "Get the vertices of the specified graph of a specified vertex type or with a specified vertex id.")]
+    [Verb("vertices", HelpText = "Get the vertices of the specified graph of a specified vertex type and optionally with a specified vertex id.")]
     public class VerticesOptions : ApiOptions
     {
         [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph.")]
@@ -63,19 +63,25 @@ namespace TigerGraph.CLI
         public string Id { get; set; }
     }
 
-    [Verb("edges", HelpText = "Get the vertices or edges of the specified graph of a specified vertex type.")]
+    [Verb("edges", HelpText = "Get the edges of the specified graph by specifying the source vertices and optionally the edge type and target vertices.")]
     public class EdgesOptions : ApiOptions
     {
         [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph.")]
         public string Graph { get; set; }
 
-        [Option('v', "vertex", Required = false, HelpText = "The vertex type to retrieve the data for.")]
-        public string Vertex { get; set; }
+        [Option('v', "vertex", Required = true, HelpText = "The source vertex type.")]
+        public string Source { get; set; }
 
-        [Option('e', "edge", Required = false, HelpText = "The edge type to retrieve the data for.")]
+        [Option("vid", Required = false, HelpText = "An optional source vertex id.")]
+        public string Id { get; set; }
+        
+        [Option('e', "edge", Required = false, HelpText = "An optional edge type to retrieve the edge data for.")]
         public string Edge { get; set; }
 
-        [Option('i', "id", Required = false, HelpText = "A specific vertex or edge id to retrieve.")]
-        public string Id { get; set; }
+        [Option('t', "target", Required = false, HelpText = "The optional target vertex type.")]
+        public string Target { get; set; }
+
+        [Option("tid", Required = false, HelpText = "The optional target vertex id.")]
+        public string Tid { get; set; }
     }
 }

@@ -115,6 +115,54 @@ namespace TigerGraph.Base
                 return response;
             }
         }
+
+        public async Task<EdgesResult> Edges(string graphName, string sourceVertexType, string sourceVertexId, string targetVertexType = "", string targetVertexId = "", string edgeType = "")
+        {
+            FailIfNotInitialized();
+            if (targetVertexType == "" && targetVertexId == "" && edgeType == "")
+            {
+                using (var op = Begin("Get all edges for source {0} vertex with id {1} for graph {2} from server {3}", sourceVertexType, sourceVertexId, graphName, RestServerUrl))
+                {
+                    var query = "graph/" + graphName + "/edges/"
+                        + (sourceVertexType ?? throw new ArgumentException("The source vertex type parameter cannot be null."))
+                        + "/" + (sourceVertexId ?? throw new ArgumentException("The source vertex id parameter cannot be null."));
+                    var response = await RestHttpGetAsync<EdgesResult>(query);
+                    op.Complete();
+                    return response;
+                }
+            }
+            else if (targetVertexType != "" && targetVertexId != "" && edgeType == "")
+            {
+                using (var op = Begin("Get all edges for source {0} vertex with id {1} to target {2} vertex with id {3} for graph {4} from server {5}", sourceVertexType, sourceVertexId, targetVertexType, targetVertexId, graphName, RestServerUrl))
+                {
+                    var query = "graph/" + graphName + "/edges/"
+                        + (sourceVertexType ?? throw new ArgumentException("The source vertex type parameter cannot be null."))
+                        + "/" + (sourceVertexId ?? throw new ArgumentException("The source vertex id parameter cannot be null."))
+                        + "/_"
+                        + "/" + (targetVertexType ?? throw new ArgumentException("The target vertex type parameter cannot be null."))
+                        + "/" + (targetVertexId ?? throw new ArgumentException("The target vertex id parameter cannot be null."));
+                    var response = await RestHttpGetAsync<EdgesResult>(query);
+                    op.Complete();
+                    return response;
+                }
+            }
+            else if (targetVertexType != "" && targetVertexId != "" && edgeType != "")
+            {
+                using (var op = Begin("Get {0} edges for source {1} vertex with id {2} to target {3} vertex with id {4} for graph {5} from server {6}", edgeType, sourceVertexType, sourceVertexId, targetVertexType, targetVertexId, graphName, RestServerUrl))
+                {
+                    var query = "graph/" + graphName + "/edges"
+                        + "/" + (sourceVertexType ?? throw new ArgumentException("The source vertex type parameter cannot be null."))
+                        + "/" + (sourceVertexId ?? throw new ArgumentException("The source vertex id parameter cannot be null."))
+                        + "/" + (edgeType ?? throw new ArgumentException("The edge type parameter cannot be null."))
+                        + "/" + (targetVertexType ?? throw new ArgumentException("The target vertex type parameter cannot be null."))
+                        + "/" + (targetVertexId ?? throw new ArgumentException("The target vertex id parameter cannot be null."));
+                    var response = await RestHttpGetAsync<EdgesResult>(query);
+                    op.Complete();
+                    return response;
+                }
+            }
+            else throw new ArgumentException("Unsupported arguments.");
+        }
         #endregion
     }
 }
