@@ -50,4 +50,20 @@ namespace TigerGraph.CLI
         public string Edge { get; set; }
     }
 
+    [Verb("data", HelpText = "Get the vertices or edges of the specified graph of a specified vertex type.")]
+    public class DataOptions : ApiOptions
+    {
+        [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph.")]
+        public string Graph { get; set; }
+
+        [Option('v', "vertex", Required = false, HelpText = "The vertex type to retrieve the data for.")]
+        public string Vertex { get; set; }
+
+        [Option('e', "edge", Required = false, HelpText = "The edge type to retrieve the data for.")]
+        public string Edge { get; set; }
+
+        [Option('i', "id", Required = false, HelpText = "A specific vertex or edge id to retrieve.")]
+        public string Id { get; set; }
+    }
+
 }

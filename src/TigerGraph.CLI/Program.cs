@@ -42,7 +42,7 @@ namespace TigerGraph.CLI
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, DataOptions>(args);
             #region Print options help
             result.WithNotParsed((IEnumerable<Error> errors) =>
             {
@@ -120,6 +120,10 @@ namespace TigerGraph.CLI
             .WithParsed<SchemaOptions>(o =>
             {
                 Exit(Schema(o).Result);
+            })
+            .WithParsed<DataOptions>(o =>
+            {
+                Exit(Data(o).Result);
             });
         }
         #endregion
@@ -143,7 +147,7 @@ namespace TigerGraph.CLI
         {
             if (string.IsNullOrEmpty(o.Vertex) && string.IsNullOrEmpty(o.Edge))
             {
-                var r = await ApiClient.Schema(o.Graph, o.Vertex, o.Edge);
+                var r = await ApiClient.Schema(o.Graph);
                 if (!r.error)
                 {
                     Info("Received {0} vertex types and {1} edge types for graph {2} from {3}.", r.results.VertexTypes.Length, r.results.EdgeTypes.Length, o.Graph, GetGsqlServerUrl(o));
@@ -189,6 +193,39 @@ namespace TigerGraph.CLI
             }
         }
 
+        static async Task<ExitResult> Data(DataOptions o)
+        {
+            if (string.IsNullOrEmpty(o.Vertex) && string.IsNullOrEmpty(o.Edge))
+            {
+                Error("You must specify if you want to retrieve either vertex or edge data.");
+                return ExitResult.INVALID_OPTIONS;
+            }
+            else if (!string.IsNullOrEmpty(o.Vertex))
+            {
+                var r = await ApiClient.Vertices(o.Graph, o.Vertex, o.Id);
+                if (!r.error)
+                {
+                    Info("Vertex {0}:\n{1}}", o.Vertex, JsonConvert.SerializeObject(r.results));
+                }
+                else
+                {
+                    Error("Error occurred retrieving {0} vertex data in graph {1} from {2}: {3}.", o.Vertex, o.Graph, o.GsqlServerUrl, r.message);
+                }
+                return ExitResult.SUCCESS;
+            }
+            else if (!string.IsNullOrEmpty(o.Edge))
+            {
+                
+                return ExitResult.SUCCESS;
+            }
+            else
+            {
+                Error("You can only retrieve either vertex or edge data.");
+                return ExitResult.INVALID_OPTIONS;
+            }
+        }
+
+        #region Get parameters
         static string GetToken(ApiOptions o)
         {
             var token = string.IsNullOrEmpty(o.Token) ? Environment.GetEnvironmentVariable("TG_TOKEN") : o.Token;
@@ -197,7 +234,7 @@ namespace TigerGraph.CLI
                 Error("The token parameter was not specified and the environment variable TG_TOKEN does not exist or is empty.");
                 Exit(ExitResult.INVALID_OPTIONS);
             }
-            Debug("Token is: ", token);
+            Debug("Token is: {0}.", token);
             return token;
         }
 
@@ -209,6 +246,7 @@ namespace TigerGraph.CLI
                 Error("The user parameter was not specified and the environment variable TG_USER does not exist or is empty.");
                 Exit(ExitResult.INVALID_OPTIONS);
             }
+            Debug("User is: {0}.", user);
             return user;
         }
 
@@ -220,6 +258,7 @@ namespace TigerGraph.CLI
                 Error("The user password parameter was not specified and the environment variable TG_PASS does not exist or is empty.");
                 Exit(ExitResult.INVALID_OPTIONS);
             }
+            Debug("Pass is: {0}.", pass);
             return pass;
         }
 
@@ -238,7 +277,11 @@ namespace TigerGraph.CLI
                 Exit(ExitResult.INVALID_OPTIONS);
                 return null;
             }
-            else return u;
+            else
+            {
+                Debug("Rest server url is: {0}.", u);
+                return u;
+            }
         }
 
         static Uri GetGsqlServerUrl(ApiOptions o)
@@ -256,15 +299,19 @@ namespace TigerGraph.CLI
                 Exit(ExitResult.INVALID_OPTIONS);
                 return null;
             }
-            else return u;
+            else
+            {
+                Debug("GSQL server url is: {0}.", u);
+                return u;
+            }
         }
+        #endregion
 
         static void PrintLogo()
         {
             CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
             CO.WriteLine("v{0}", ApiClient.AssemblyVersion.ToString(3), Color.Blue);
         }
-
 
         public static void Exit(ExitResult result)
         {
@@ -295,7 +342,7 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
-        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions) };
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(DataOptions) };
 
         static ApiClient ApiClient {get; set; }
         #endregion

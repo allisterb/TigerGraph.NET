@@ -18,5 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\EchoResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Endpoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Schema.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Vertices.cs" />
   </ItemGroup>
 </Project>

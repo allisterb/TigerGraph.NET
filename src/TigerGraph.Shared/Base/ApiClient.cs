@@ -64,27 +64,19 @@ namespace TigerGraph.Base
             }
         }
 
-        public async Task<SchemaResult> Schema(string graphName, string vertexType = "", string edgeType="")
+        public async Task<SchemaResult> Schema(string graphName)
         {
             FailIfNotInitialized();
             using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
             {
                 var query = "gsqlserver/gsql/schema/?graph=" + graphName;
-                if (!string.IsNullOrEmpty(vertexType))
-                {
-                    query += "&type=" + vertexType;
-                }
-                else if (!string.IsNullOrEmpty(edgeType))
-                {
-                    query += "type=" + edgeType;
-                }
                 var response = await GsqlHttpGetAsync<SchemaResult>(query);
                 op.Complete();
                 return response;
             }
         }
 
-        public async Task<VertexSchemaResult> VertexSchema(string graphName, string vertexType = "")
+        public async Task<VertexSchemaResult> VertexSchema(string graphName, string vertexType)
         {
             FailIfNotInitialized();
             using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
@@ -96,13 +88,29 @@ namespace TigerGraph.Base
             }
         }
 
-        public async Task<EdgeSchemaResult> EdgeSchema(string graphName, string edgeType = "")
+        public async Task<EdgeSchemaResult> EdgeSchema(string graphName, string edgeType)
         {
             FailIfNotInitialized();
             using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
             {
                 var query = "gsqlserver/gsql/schema/?graph=" + graphName + "&type=" + (edgeType ?? throw new ArgumentException("The edge type parameter cannot be null."));
                 var response = await GsqlHttpGetAsync<EdgeSchemaResult>(query);
+                op.Complete();
+                return response;
+            }
+        }
+
+        public async Task<VerticesResult> Vertices(string graphName, string vertexType, string vertexId = "")
+        {
+            FailIfNotInitialized();
+            using (var op = Begin("Get {0} vertices for graph {1} from server {2}", vertexType, graphName, RestServerUrl))
+            {
+                var query = "graph/"+  graphName + "/vertices/" + (vertexType ?? throw new ArgumentException("The vertex type parameter cannot be null."));
+                if (!string.IsNullOrEmpty(vertexId))
+                {
+                    query += "/" + vertexId;
+                }
+                var response = await RestHttpGetAsync<VerticesResult>(query);
                 op.Complete();
                 return response;
             }
