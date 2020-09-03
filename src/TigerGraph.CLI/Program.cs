@@ -221,17 +221,26 @@ namespace TigerGraph.CLI
 
         static async Task<ExitResult> Edges(EdgesOptions o)
         {
-            var r = await ApiClient.Edges(o.Graph, o.Source, o.Id);
+            var r = await ApiClient.Edges(o.Graph, o.Source, o.Id, o.Target, o.Tid, o.Edge);
             if (!r.error)
             {
                 if (string.IsNullOrEmpty(o.Edge) && string.IsNullOrEmpty(o.Target) && string.IsNullOrEmpty(o.Tid))
                 {
                     Info("All edges from source {0} vertex with id {1}:\n{2}}", o.Source, o.Id, JsonConvert.SerializeObject(r.results));
                 }
-                else
+                else if (!string.IsNullOrEmpty(o.Edge) && string.IsNullOrEmpty(o.Target) && string.IsNullOrEmpty(o.Tid))
                 {
-                    Info("{0} vertices:\n{1}}", o.Source, JsonConvert.SerializeObject(r.results));
+                    Info("{0} Edges from source {1} vertex with id {2}:\n{3}}", o.Edge, o.Source, o.Id, JsonConvert.SerializeObject(r.results));
                 }
+                else if (string.IsNullOrEmpty(o.Edge) && !string.IsNullOrEmpty(o.Target) && !string.IsNullOrEmpty(o.Tid))
+                {
+                    Info("All edges from source {0} vertex with id {1} to target {2} vertex with id {3}:\n{4}}", o.Source, o.Id, o.Target, o.Tid, JsonConvert.SerializeObject(r.results));
+                }
+                else if (!string.IsNullOrEmpty(o.Edge) && !string.IsNullOrEmpty(o.Target) && !string.IsNullOrEmpty(o.Tid))
+                {
+                    Info("{0} edges from source {1} vertex with id {2} to target {3} vertex with id {4}:\n{5}}", o.Edge, o.Source, o.Id, o.Target, o.Tid, JsonConvert.SerializeObject(r.results));
+                }
+                else throw new InvalidOperationException("Unsupported CLI options combination.");
             }
             else
             {

@@ -21,7 +21,7 @@ namespace TigerGraph.CLI
         [Option('r', "rest", Required = false, HelpText = "Your TigerGraph REST++ server instance URL. If none is specified then use the environment variable TG_REST_SERVER_URL.")]
         public string RestServerUrl { get; set; }
 
-        [Option('q', "gsql", Required = false, HelpText = "Your TigerGraph REST++ server instance URL. If none is specified then use the environment variable TG_GSQL_SERVER_URL.")]
+        [Option('q', "gsql", Required = false, HelpText = "Your TigerGraph GSQL server instance URL. If none is specified then use the environment variable TG_GSQL_SERVER_URL.")]
         public string GsqlServerUrl { get; set; }
 
         [Option('u', "user", Required = false, HelpText = "Your TigerGraph server user name. If none is specified then use the environment variable TG_USR.")]
@@ -66,13 +66,13 @@ namespace TigerGraph.CLI
     [Verb("edges", HelpText = "Get the edges of the specified graph by specifying the source vertices and optionally the edge type and target vertices.")]
     public class EdgesOptions : ApiOptions
     {
-        [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph.")]
+        [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph. Defaults to 'MyGraph'.")]
         public string Graph { get; set; }
 
         [Option('v', "vertex", Required = true, HelpText = "The source vertex type.")]
         public string Source { get; set; }
 
-        [Option("vid", Required = false, HelpText = "An optional source vertex id.")]
+        [Option("id", Required = true, HelpText = "An optional source vertex id.")]
         public string Id { get; set; }
         
         [Option('e', "edge", Required = false, HelpText = "An optional edge type to retrieve the edge data for.")]

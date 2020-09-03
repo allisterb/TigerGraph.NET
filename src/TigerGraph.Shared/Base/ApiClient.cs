@@ -67,7 +67,7 @@ namespace TigerGraph.Base
         public async Task<SchemaResult> Schema(string graphName)
         {
             FailIfNotInitialized();
-            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
+            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, GsqlServerUrl))
             {
                 var query = "gsqlserver/gsql/schema/?graph=" + graphName;
                 var response = await GsqlHttpGetAsync<SchemaResult>(query);
@@ -79,7 +79,7 @@ namespace TigerGraph.Base
         public async Task<VertexSchemaResult> VertexSchema(string graphName, string vertexType)
         {
             FailIfNotInitialized();
-            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
+            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, GsqlServerUrl))
             {
                 var query = "gsqlserver/gsql/schema/?graph=" + graphName + "&type=" + (vertexType ?? throw new ArgumentException("The vertex type parameter cannot be null."));
                 var response = await GsqlHttpGetAsync<VertexSchemaResult>(query);
@@ -91,7 +91,7 @@ namespace TigerGraph.Base
         public async Task<EdgeSchemaResult> EdgeSchema(string graphName, string edgeType)
         {
             FailIfNotInitialized();
-            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
+            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, GsqlServerUrl))
             {
                 var query = "gsqlserver/gsql/schema/?graph=" + graphName + "&type=" + (edgeType ?? throw new ArgumentException("The edge type parameter cannot be null."));
                 var response = await GsqlHttpGetAsync<EdgeSchemaResult>(query);
@@ -119,7 +119,7 @@ namespace TigerGraph.Base
         public async Task<EdgesResult> Edges(string graphName, string sourceVertexType, string sourceVertexId, string targetVertexType = "", string targetVertexId = "", string edgeType = "")
         {
             FailIfNotInitialized();
-            if (targetVertexType == "" && targetVertexId == "" && edgeType == "")
+            if (string.IsNullOrEmpty(targetVertexType) && string.IsNullOrEmpty(targetVertexId) && string.IsNullOrEmpty(edgeType))
             {
                 using (var op = Begin("Get all edges for source {0} vertex with id {1} for graph {2} from server {3}", sourceVertexType, sourceVertexId, graphName, RestServerUrl))
                 {
@@ -131,7 +131,7 @@ namespace TigerGraph.Base
                     return response;
                 }
             }
-            else if (targetVertexType != "" && targetVertexId != "" && edgeType == "")
+            else if (!string.IsNullOrEmpty(targetVertexType) && !string.IsNullOrEmpty(targetVertexId) && string.IsNullOrEmpty(edgeType))
             {
                 using (var op = Begin("Get all edges for source {0} vertex with id {1} to target {2} vertex with id {3} for graph {4} from server {5}", sourceVertexType, sourceVertexId, targetVertexType, targetVertexId, graphName, RestServerUrl))
                 {
@@ -146,7 +146,7 @@ namespace TigerGraph.Base
                     return response;
                 }
             }
-            else if (targetVertexType != "" && targetVertexId != "" && edgeType != "")
+            else if (!string.IsNullOrEmpty(targetVertexType) && !string.IsNullOrEmpty(targetVertexId) && !string.IsNullOrEmpty(edgeType))
             {
                 using (var op = Begin("Get {0} edges for source {1} vertex with id {2} to target {3} vertex with id {4} for graph {5} from server {6}", edgeType, sourceVertexType, sourceVertexId, targetVertexType, targetVertexId, graphName, RestServerUrl))
                 {
@@ -161,7 +161,20 @@ namespace TigerGraph.Base
                     return response;
                 }
             }
-            else throw new ArgumentException("Unsupported arguments.");
+            else if (string.IsNullOrEmpty(targetVertexType) && string.IsNullOrEmpty(targetVertexId) && !string.IsNullOrEmpty(edgeType))
+            {
+                using (var op = Begin("Get {0} edges for source {1} vertex with id {2} to target {3} vertex with id {4} for graph {5} from server {6}", edgeType, sourceVertexType, sourceVertexId, targetVertexType, targetVertexId, graphName, RestServerUrl))
+                {
+                    var query = "graph/" + graphName + "/edges"
+                        + "/" + (sourceVertexType ?? throw new ArgumentException("The source vertex type parameter cannot be null."))
+                        + "/" + (sourceVertexId ?? throw new ArgumentException("The source vertex id parameter cannot be null."))
+                        + "/" + (edgeType ?? throw new ArgumentException("The edge type parameter cannot be null."));
+                    var response = await RestHttpGetAsync<EdgesResult>(query);
+                    op.Complete();
+                    return response;
+                }
+            }
+            else throw new ArgumentException(string.Format("Unsupported arguments: Edge type:{0} Target Vertex Type: {1} Target Vertex ID:{2}", edgeType, targetVertexType, targetVertexId));
         }
         #endregion
     }
