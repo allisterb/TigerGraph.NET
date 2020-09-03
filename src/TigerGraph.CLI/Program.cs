@@ -141,7 +141,7 @@ namespace TigerGraph.CLI
 
         static async Task<ExitResult> Schema(SchemaOptions o)
         {
-            if (string.IsNullOrEmpty(o.Vertex) && string.IsNullOrEmpty(o.Vertex))
+            if (string.IsNullOrEmpty(o.Vertex) && string.IsNullOrEmpty(o.Edge))
             {
                 var r = await ApiClient.Schema(o.Graph, o.Vertex, o.Edge);
                 if (!r.error)
@@ -169,7 +169,24 @@ namespace TigerGraph.CLI
                 }
                 return ExitResult.SUCCESS;
             }
-            else return ExitResult.SUCCESS;
+            else if (!string.IsNullOrEmpty(o.Edge))
+            {
+                var r = await ApiClient.EdgeSchema(o.Graph, o.Edge);
+                if (!r.error)
+                {
+                    Info("Edge {0} has schema:\n{1}}", o.Edge, JsonConvert.SerializeObject(r.results));
+                }
+                else
+                {
+                    Error("Error occurred retrieving edge schema {0} in graph {1} from {2}: {3}.", o.Edge, o.Graph, o.GsqlServerUrl, r.message);
+                }
+                return ExitResult.SUCCESS;
+            }
+            else
+            {
+                Error("You can only retrieve a schema for a single vertex or edge at a time.");
+                return ExitResult.INVALID_OPTIONS;
+            }
         }
 
         static string GetToken(ApiOptions o)

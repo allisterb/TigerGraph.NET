@@ -84,18 +84,29 @@ namespace TigerGraph.Base
             }
         }
 
-        public async Task<VertexSchema> VertexSchema(string graphName, string vertexType = "")
+        public async Task<VertexSchemaResult> VertexSchema(string graphName, string vertexType = "")
         {
             FailIfNotInitialized();
             using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
             {
                 var query = "gsqlserver/gsql/schema/?graph=" + graphName + "&type=" + (vertexType ?? throw new ArgumentException("The vertex type parameter cannot be null."));
-                var response = await GsqlHttpGetAsync<VertexSchema>(query);
+                var response = await GsqlHttpGetAsync<VertexSchemaResult>(query);
                 op.Complete();
                 return response;
             }
         }
 
+        public async Task<EdgeSchemaResult> EdgeSchema(string graphName, string edgeType = "")
+        {
+            FailIfNotInitialized();
+            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
+            {
+                var query = "gsqlserver/gsql/schema/?graph=" + graphName + "&type=" + (edgeType ?? throw new ArgumentException("The edge type parameter cannot be null."));
+                var response = await GsqlHttpGetAsync<EdgeSchemaResult>(query);
+                op.Complete();
+                return response;
+            }
+        }
         #endregion
     }
 }

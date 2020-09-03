@@ -76,18 +76,38 @@ namespace TigerGraph.Models
     {
     }
 
-    public class VertexSchema
+    public class VertexSchemaResult
     {
         public bool error { get; set; }
         public string message { get; set; }
-        public VertexSchemaResult results { get; set; }
+        public VertexSchema results { get; set; }
     }
 
-    public class VertexSchemaResult
+    public class VertexSchema
     {
         public Config Config { get; set; }
         public Attribute[] Attributes { get; set; }
         public Primaryid PrimaryId { get; set; }
+        public string Name { get; set; }
+    }
+
+
+    public class EdgeSchemaResult
+    {
+        public bool error { get; set; }
+        public string message { get; set; }
+        public EdgeSchema results { get; set; }
+    }
+
+    public class EdgeSchema
+    {
+        public bool IsDirected { get; set; }
+        public string ToVertexTypeName { get; set; }
+        public string[] ToVertexTypeList { get; set; }
+        public EdgeConfig Config { get; set; }
+        public object[] Attributes { get; set; }
+        public string FromVertexTypeName { get; set; }
+        public string[] FromVertexTypeList { get; set; }
         public string Name { get; set; }
     }
 }
