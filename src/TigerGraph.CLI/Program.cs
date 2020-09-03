@@ -42,7 +42,7 @@ namespace TigerGraph.CLI
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, DataOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions>(args);
             #region Print options help
             result.WithNotParsed((IEnumerable<Error> errors) =>
             {
@@ -121,9 +121,9 @@ namespace TigerGraph.CLI
             {
                 Exit(Schema(o).Result);
             })
-            .WithParsed<DataOptions>(o =>
+            .WithParsed<VerticesOptions>(o =>
             {
-                Exit(Data(o).Result);
+                Exit(Vertices(o).Result);
             });
         }
         #endregion
@@ -193,37 +193,26 @@ namespace TigerGraph.CLI
             }
         }
 
-        static async Task<ExitResult> Data(DataOptions o)
+        static async Task<ExitResult> Vertices(VerticesOptions o)
         {
-            if (string.IsNullOrEmpty(o.Vertex) && string.IsNullOrEmpty(o.Edge))
+            var r = await ApiClient.Vertices(o.Graph, o.Vertex, o.Id);
+            if (!r.error)
             {
-                Error("You must specify if you want to retrieve either vertex or edge data.");
-                return ExitResult.INVALID_OPTIONS;
-            }
-            else if (!string.IsNullOrEmpty(o.Vertex))
-            {
-                var r = await ApiClient.Vertices(o.Graph, o.Vertex, o.Id);
-                if (!r.error)
+                if (!string.IsNullOrEmpty(o.Id))
                 {
-                    Info("Vertex {0}:\n{1}}", o.Vertex, JsonConvert.SerializeObject(r.results));
+                    Info("{0} vertices:\n{1}}", o.Vertex, JsonConvert.SerializeObject(r.results));
                 }
                 else
                 {
-                    Error("Error occurred retrieving {0} vertex data in graph {1} from {2}: {3}.", o.Vertex, o.Graph, o.GsqlServerUrl, r.message);
+                    Info("{0} vertex with id {1}:\n{2}}", o.Vertex, o.Id, JsonConvert.SerializeObject(r.results));
                 }
-                return ExitResult.SUCCESS;
-            }
-            else if (!string.IsNullOrEmpty(o.Edge))
-            {
-                
-                return ExitResult.SUCCESS;
             }
             else
             {
-                Error("You can only retrieve either vertex or edge data.");
-                return ExitResult.INVALID_OPTIONS;
+                Error("Error occurred retrieving {0} vertex data in graph {1} from {2}: {3}.", o.Vertex, o.Graph, o.GsqlServerUrl, r.message);
             }
-        }
+            return ExitResult.SUCCESS;
+        }        
 
         #region Get parameters
         static string GetToken(ApiOptions o)
@@ -342,7 +331,7 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
-        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(DataOptions) };
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions) };
 
         static ApiClient ApiClient {get; set; }
         #endregion
