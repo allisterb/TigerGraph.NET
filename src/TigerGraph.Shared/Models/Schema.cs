@@ -14,13 +14,13 @@ namespace TigerGraph.Models
     public class Schema
     {
         public string GraphName { get; set; }
+        public Config Config { get; set; }
         public Vertextype[] VertexTypes { get; set; }
         public Edgetype[] EdgeTypes { get; set; }
     }
 
     public class Vertextype
     {
-        public Config Config { get; set; }
         public Attribute[] Attributes { get; set; }
         public Primaryid PrimaryId { get; set; }
         public string Name { get; set; }
@@ -76,4 +76,18 @@ namespace TigerGraph.Models
     {
     }
 
+    public class VertexSchema
+    {
+        public bool error { get; set; }
+        public string message { get; set; }
+        public VertexSchemaResult results { get; set; }
+    }
+
+    public class VertexSchemaResult
+    {
+        public Config Config { get; set; }
+        public Attribute[] Attributes { get; set; }
+        public Primaryid PrimaryId { get; set; }
+        public string Name { get; set; }
+    }
 }

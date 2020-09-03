@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>TigerGraph</RootNamespace>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Product>TigerGraph</Product>
+    <Authors>Allister Beharry</Authors>
+    <Version>0.2.0</Version>
   </PropertyGroup>
 
   <Import Project="..\TigerGraph.Shared\TigerGraph.Shared.projitems" Label="Shared" />

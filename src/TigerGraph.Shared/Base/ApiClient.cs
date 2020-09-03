@@ -58,24 +58,44 @@ namespace TigerGraph.Base
             FailIfNotInitialized();
             using (var op = Begin("Get endpoints from server {0}", RestServerUrl))
             {
-
                 var response = await RestHttpGetAsync<Dictionary<string, EndPointParameter>>("endpoints?builtin=true&dynamic=true&static=true");
                 op.Complete();
                 return response;
             }
         }
 
-        public async Task<SchemaResult> Schema(string graphName)
+        public async Task<SchemaResult> Schema(string graphName, string vertexType = "", string edgeType="")
         {
             FailIfNotInitialized();
             using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
             {
-
-                var response = await GsqlHttpGetAsync<SchemaResult>("gsqlserver/gsql/schema/?graph=" + graphName);
+                var query = "gsqlserver/gsql/schema/?graph=" + graphName;
+                if (!string.IsNullOrEmpty(vertexType))
+                {
+                    query += "&type=" + vertexType;
+                }
+                else if (!string.IsNullOrEmpty(edgeType))
+                {
+                    query += "type=" + edgeType;
+                }
+                var response = await GsqlHttpGetAsync<SchemaResult>(query);
                 op.Complete();
                 return response;
             }
         }
+
+        public async Task<VertexSchema> VertexSchema(string graphName, string vertexType = "")
+        {
+            FailIfNotInitialized();
+            using (var op = Begin("Get schema for graph {0} from server {1}", graphName, RestServerUrl))
+            {
+                var query = "gsqlserver/gsql/schema/?graph=" + graphName + "&type=" + (vertexType ?? throw new ArgumentException("The vertex type parameter cannot be null."));
+                var response = await GsqlHttpGetAsync<VertexSchema>(query);
+                op.Complete();
+                return response;
+            }
+        }
+
         #endregion
     }
 }

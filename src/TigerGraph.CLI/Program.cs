@@ -141,16 +141,35 @@ namespace TigerGraph.CLI
 
         static async Task<ExitResult> Schema(SchemaOptions o)
         {
-            var r = await ApiClient.Schema(o.Graph);
-            if (!r.error)
+            if (string.IsNullOrEmpty(o.Vertex) && string.IsNullOrEmpty(o.Vertex))
             {
-                Info("Received {0} vertex types and {1} edge types for graph {2} from {3}.", r.results.VertexTypes.Length, r.results.EdgeTypes.Length, o.Graph, GetGsqlServerUrl(o));
+                var r = await ApiClient.Schema(o.Graph, o.Vertex, o.Edge);
+                if (!r.error)
+                {
+                    Info("Received {0} vertex types and {1} edge types for graph {2} from {3}.", r.results.VertexTypes.Length, r.results.EdgeTypes.Length, o.Graph, GetGsqlServerUrl(o));
+                    Info("Vertices: {0}", r.results.VertexTypes.Select(v => v.Name));
+                    Info("Edges: {0}", r.results.EdgeTypes.Select(v => v.Name));
+                }
+                else
+                {
+                    Error("Error occurred retrieving schema for graph {0} from {1}: {2}.", o.Graph, o.GsqlServerUrl, r.message);
+                }
+                return ExitResult.SUCCESS;
             }
-            else
+            else if (!string.IsNullOrEmpty(o.Vertex))
             {
-                Error("Error occurred retrieving schema for graph {0} from {1}: {2}.", o.Graph, o.GsqlServerUrl, r.message);
+                var r = await ApiClient.VertexSchema(o.Graph, o.Vertex);
+                if (!r.error)
+                {
+                    Info("Vertex {0} has schema:\n{1}}", o.Vertex, JsonConvert.SerializeObject(r.results));
+                }
+                else
+                {
+                    Error("Error occurred retrieving vertex schema {0} in graph {1} from {2}: {3}.", o.Vertex, o.Graph, o.GsqlServerUrl, r.message);
+                }
+                return ExitResult.SUCCESS;
             }
-            return ExitResult.SUCCESS;
+            else return ExitResult.SUCCESS;
         }
 
         static string GetToken(ApiOptions o)
