@@ -3,5 +3,5 @@
 set -e 
 
 cd src/TigerGraph.CLI
-dotnet build /p:Configuration=RuntimeDebug $*
+dotnet build /p:Configuration=Debug $*
 cd ../../
