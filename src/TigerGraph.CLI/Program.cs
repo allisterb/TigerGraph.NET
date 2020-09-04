@@ -43,7 +43,7 @@ namespace TigerGraph.CLI
             }
             PrintLogo();
 
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, WinEvtOptions>(args);
             result.WithParsed<ApiOptions>(o =>
             {
                 ApiClient = new ApiClient(GetToken(o), GetRestServerUrl(o), GetGsqlServerUrl(o), GetUser(o), GetPass(o));
@@ -248,6 +248,11 @@ namespace TigerGraph.CLI
             }
             return ExitResult.SUCCESS;
         }
+
+        static async Task<ExitResult> SysMon(WinEvtOptions o)
+        {
+            throw new NotImplementedException();
+        }
         #region Get parameters
         static string GetToken(ApiOptions o)
         {
@@ -365,7 +370,7 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
-        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions) };
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(WinEvtOptions) };
 
         static ApiClient ApiClient {get; set; }
         #endregion

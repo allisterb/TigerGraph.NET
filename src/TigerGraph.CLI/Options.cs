@@ -84,4 +84,13 @@ namespace TigerGraph.CLI
         [Option("tid", Required = false, HelpText = "The optional target vertex id.")]
         public string Tid { get; set; }
     }
+
+    [Verb("winevt", HelpText = "Ingest Windows event log data.")]
+    public class WinEvtOptions : ApiOptions
+    {
+        [Option("sysmon", Required = false, HelpText = "Ingest event log data from the SysMon program.")]
+        public bool SysMon { get; set; }
+    }
+
+
 }
