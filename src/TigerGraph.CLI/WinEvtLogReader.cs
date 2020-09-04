@@ -1,8 +1,8 @@
-﻿using System;
+﻿#if NET461
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -22,3 +22,4 @@ namespace TigerGraph.CLI
         public static EventLog[] EventLogs { get; private set; }
     }
 }
+#endif
