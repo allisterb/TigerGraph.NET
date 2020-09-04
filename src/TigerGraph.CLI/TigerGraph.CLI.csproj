@@ -9,11 +9,15 @@
     <Authors>Allister Beharry</Authors>
     <Product>TigerGraph</Product>
     <Description>.NET CLI for talking to a TigerGraph server instance.</Description>
-    <Framework Condition=" '$(Framework)' == 'NET461' ">
-      <DefineConstants>NET461</DefineConstants>
-    </Framework>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Framework)' == 'NET461' ">
+    <DefineConstants>NET461</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <DefineConstants>WINDOWS</DefineConstants>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Colorful.Console" Version="1.2.11" />
     <PackageReference Include="CommandLineParser" Version="2.3.0" />

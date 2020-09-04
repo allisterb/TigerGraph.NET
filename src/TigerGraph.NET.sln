@@ -13,8 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerGraph.Lib", "TigerGrap
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{9A0B6275-9ECE-4AA6-A27B-C07265105B3D}"
 	ProjectSection(SolutionItems) = preProject
+		..\build.sh = ..\build.sh
 		..\scripts\endpoints.cmd = ..\scripts\endpoints.cmd
 		..\scripts\schema.cmd = ..\scripts\schema.cmd
+		..\tg = ..\tg
 		..\tg.cmd = ..\tg.cmd
 		..\scripts\vertices.cmd = ..\scripts\vertices.cmd
 	EndProjectSection

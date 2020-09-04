@@ -42,8 +42,11 @@ namespace TigerGraph.CLI
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
-
+#if WINDOWS && NET461
             ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, WinEvtOptions>(args);
+#else
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions>(args);
+#endif
             result.WithParsed<ApiOptions>(o =>
             {
                 ApiClient = new ApiClient(GetToken(o), GetRestServerUrl(o), GetGsqlServerUrl(o), GetUser(o), GetPass(o));
@@ -68,7 +71,7 @@ namespace TigerGraph.CLI
             {
                 Exit(Edges(o).Result);
             })
-            #region Print options help
+#region Print options help
             .WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
@@ -129,9 +132,9 @@ namespace TigerGraph.CLI
                     Exit(ExitResult.INVALID_OPTIONS);
                 }
             });
-            #endregion
+#endregion
         }
-        #endregion
+#endregion
 
         #region Methods
         static async Task<ExitResult> Echo(PingOptions o)
@@ -249,10 +252,12 @@ namespace TigerGraph.CLI
             return ExitResult.SUCCESS;
         }
 
-        static async Task<ExitResult> SysMon(WinEvtOptions o)
+        #if WINDOWS && NET461
+        static Task<ExitResult> SysMon(WinEvtOptions o)
         {
             throw new NotImplementedException();
         }
+        #endif
         #region Get parameters
         static string GetToken(ApiOptions o)
         {
@@ -370,8 +375,11 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
+        #if WINDOWS && NET461
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(WinEvtOptions) };
-
+        #else
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions)};
+        #endif
         static ApiClient ApiClient {get; set; }
         #endregion
 
