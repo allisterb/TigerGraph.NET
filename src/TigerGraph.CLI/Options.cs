@@ -27,7 +27,7 @@ namespace TigerGraph.CLI
         [Option('u', "user", Required = false, HelpText = "Your TigerGraph server user name. If none is specified then use the environment variable TG_USR.")]
         public string User { get; set; }
 
-        [Option('p', "pass", Required = false, HelpText = "Your TigerGraph server user password. If none is specified then use the environment variable TG_PASS.")]
+        [Option("pass", Required = false, HelpText = "Your TigerGraph server user password. If none is specified then use the environment variable TG_PASS.")]
         public string Pass { get; set; }
     }
 

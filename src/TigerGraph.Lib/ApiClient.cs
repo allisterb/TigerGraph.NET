@@ -28,11 +28,17 @@ namespace TigerGraph
         public ApiClient(string token, Uri restServerUrl, Uri gsqlServerUrl, string user, string pass) : base(token, restServerUrl, gsqlServerUrl, user, pass)
         {
             RestClient = new RestClient(RestServerUrl);
-            RestClient.AddDefaultHeader("Authorization", "Bearer " + Token);
-            Info("Initialized REST++ client authentication.");
+            if (!string.IsNullOrEmpty(token))
+            {
+                RestClient.AddDefaultHeader("Authorization", "Bearer " + Token);
+                Info("Initialized REST++ client authentication using specified token.");
+            }
             GsqlClient = new RestClient(GsqlServerUrl);
-            GsqlClient.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator(User, Pass);
-            Info("Initialized GSQL client authentication.");
+            if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(pass))
+            {
+                GsqlClient.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator(User, Pass);
+                Info("Initialized GSQL client authentication using specified name nd password.");
+            }
             Initialized = true;
         }
 

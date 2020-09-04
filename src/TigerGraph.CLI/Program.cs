@@ -71,7 +71,14 @@ namespace TigerGraph.CLI
             {
                 Exit(Edges(o).Result);
             })
-#region Print options help
+#if WINDOWS && NET461
+            .WithParsed<WinEvtOptions>(o =>
+            {
+                Exit(WinEvt(o).Result);
+            })
+#endif
+
+            #region Print options help
             .WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
@@ -132,9 +139,9 @@ namespace TigerGraph.CLI
                     Exit(ExitResult.INVALID_OPTIONS);
                 }
             });
-#endregion
+            #endregion
         }
-#endregion
+        #endregion
 
         #region Methods
         static async Task<ExitResult> Echo(PingOptions o)
@@ -252,10 +259,20 @@ namespace TigerGraph.CLI
             return ExitResult.SUCCESS;
         }
 
-        #if WINDOWS && NET461
-        static Task<ExitResult> SysMon(WinEvtOptions o)
+#if WINDOWS && NET461
+        static async Task<ExitResult> WinEvt(WinEvtOptions o)
         {
-            throw new NotImplementedException();
+            var path = Environment.ExpandEnvironmentVariables(SysMonEvtLogPath);
+            if (!File.Exists(path))
+            {
+                Error("The SysMon event log file at {0} was not found. Ensure you have installed SysMon on this system.", path);
+                return ExitResult.NOT_FOUND_OR_SERVER_ERROR;
+            }
+            else
+            {
+                Info("Using SysMon event log file at {0}.", path);
+            }
+            return ExitResult.SUCCESS;
         }
         #endif
         #region Get parameters
@@ -339,7 +356,6 @@ namespace TigerGraph.CLI
             }
         }
         #endregion
-
         static void PrintLogo()
         {
             CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
@@ -375,6 +391,8 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Properties
+        public static string SysMonEvtLogPath { get; } = "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx";
+        
         #if WINDOWS && NET461
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(WinEvtOptions) };
         #else
