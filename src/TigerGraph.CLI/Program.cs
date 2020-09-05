@@ -279,9 +279,12 @@ namespace TigerGraph.CLI
             }
             else
             {
+                var winevt = new WinEvtLogReader();
                 Info("Using SysMon event log file at {0}.", path);
+                Info("Reading SysMon event log. Press any key to exit.");
+                winevt.ReadSysMonLog();
+                return ExitResult.SUCCESS;
             }
-            return ExitResult.SUCCESS;
         }
         #endif
         #region Get parameters

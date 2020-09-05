@@ -14,32 +14,33 @@ using System.Threading.Tasks;
 
 namespace TigerGraph.CLI
 {
-    public class LogReader : Base.Runtime
+    public class WinEvtLogReader : Base.Runtime
     {
-        static LogReader()
+        public WinEvtLogReader()
         {
-                          
+            SysMonLogQuery = new EventLogQuery(Program.SysMonEvtLogPath, PathType.FilePath);
+            Initialized = true;
         }
 
-        public static EventBookmark Bookmark;
-        public LogReader()
+        public EventLogQuery SysMonLogQuery { get; }
+        
+        
+        public void ReadSysMonLog()
         {
-            var q = new EventLogQuery(Program.SysMonEvtLogPath, PathType.FilePath);
-            EventRecord record;
-            using (var reader = new EventLogReader(q))
+            while (!Console.KeyAvailable && !Ct.IsCancellationRequested)
             {
-                while ((record = reader.ReadEvent()) != null)
+                EventRecord record;
+                using (var reader = bookmark != null ? new EventLogReader(SysMonLogQuery, bookmark) : new EventLogReader(SysMonLogQuery))
                 {
-                    //record.
+                    while (!Console.KeyAvailable && !Ct.IsCancellationRequested && (record = reader.ReadEvent()) != null)
+                    {
+                        Info("Keywords: {0}", record.OpcodeDisplayName);
+                    }
+
                 }
-                
             }
-                //EventLogQuery eventsQuery = new EventLogQuery(LogName, PathType.LogName, query) { ReverseDirection = true };
-                //EventLogReader logReader = new EventLogReader(eventsQuery);
-                //Info("Event logs: {0}", EventLogs.Select(l => l.Log));
-                //var l = EventLog.
         }
-        public static EventLog[] EventLogs { get; private set; }
+        protected EventBookmark bookmark;
     }
 }
 #endif
