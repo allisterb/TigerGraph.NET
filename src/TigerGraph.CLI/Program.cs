@@ -26,9 +26,16 @@ namespace TigerGraph.CLI
         NOT_FOUND_OR_SERVER_ERROR = 4
     }
     #endregion
-
     class Program : Base.Runtime
     {
+        static Program()
+        {
+            foreach(var t in OptionTypes)
+            {
+                OptionTypesMap.Add(t.Name, t);
+            }
+        }
+
         #region Entry point
         static void Main(string[] args)
         {
@@ -82,9 +89,9 @@ namespace TigerGraph.CLI
             .WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
-                help.Copyright = string.Empty;
+                help.Heading = new HeadingInfo("TigerGraph.NET", ApiClient.AssemblyVersion.ToString());
+                help.Copyright = new CopyrightInfo("Allister Beharry", new int[] { 2020 });
                 help.AddPreOptionsLine(string.Empty);
-
                 if (errors.Any(e => e.Tag == ErrorType.VersionRequestedError))
                 {
                     Exit(ExitResult.SUCCESS);
@@ -106,7 +113,9 @@ namespace TigerGraph.CLI
                 else if (errors.Any(e => e.Tag == ErrorType.HelpRequestedError))
                 {
                     HelpRequestedError error = (HelpRequestedError)errors.First(e => e.Tag == ErrorType.HelpRequestedError);
-                    help.AddVerbs(OptionTypes);
+                    help.AddVerbs(result.TypeInfo.Current);
+                    help.AddOptions(result);
+                    help.AddPreOptionsLine($"{result.TypeInfo.Current.Name.Replace("Options", "").ToLower()} options:");
                     Info(help);
                     Exit(ExitResult.SUCCESS);
                 }
@@ -240,7 +249,7 @@ namespace TigerGraph.CLI
                 }
                 else if (!string.IsNullOrEmpty(o.Edge) && string.IsNullOrEmpty(o.Target) && string.IsNullOrEmpty(o.Tid))
                 {
-                    Info("{0} Edges from source {1} vertex with id {2}:\n{3}}", o.Edge, o.Source, o.Id, JsonConvert.SerializeObject(r.results));
+                    Info("{0} edges from source {1} vertex with id {2}:\n{3}}", o.Edge, o.Source, o.Id, JsonConvert.SerializeObject(r.results));
                 }
                 else if (string.IsNullOrEmpty(o.Edge) && !string.IsNullOrEmpty(o.Target) && !string.IsNullOrEmpty(o.Tid))
                 {
@@ -395,9 +404,11 @@ namespace TigerGraph.CLI
         
         #if WINDOWS && NET461
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(WinEvtOptions) };
-        #else
+#else
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions)};
-        #endif
+#endif
+
+        static Dictionary<string, Type> OptionTypesMap { get; } = new Dictionary<string, Type>();
         static ApiClient ApiClient {get; set; }
         #endregion
 

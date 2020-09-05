@@ -7,7 +7,7 @@
     <FileVersion>0.1.0.0</FileVersion>
     <Version>0.1.0</Version>
     <Authors>Allister Beharry</Authors>
-    <Product>TigerGraph</Product>
+    <Product>TigerGraph.NET</Product>
     <Description>.NET CLI for talking to a TigerGraph server instance.</Description>
   </PropertyGroup>
 
