@@ -49,7 +49,7 @@ namespace TigerGraph
         public override async Task<T> RestHttpGetAsync<T>(string query)
         {
             var request = new RestRequest(query, Method.GET);
-            Debug("HTTP query:{0}", RestServerUrl.ToString() + query);
+            Debug("HTTP GET:{0}", RestServerUrl.ToString() + query);
             IRestResponse response = await RestClient.ExecuteAsync(request);
             if (response.ErrorException != null)
             {
@@ -62,6 +62,22 @@ namespace TigerGraph
             }
         }
 
+        public override async Task<T2> RestHttpPostAsync<T1, T2>(string query, T1 data)
+        {
+            var request = new RestRequest(query, Method.POST, DataFormat.Json);
+            request.AddJsonBody(data);
+            Debug("HTTP POST:{0}", RestServerUrl.ToString() + query);
+            IRestResponse response = await RestClient.ExecuteAsync(request);
+            if (response.ErrorException != null)
+            {
+                throw response.ErrorException;
+            }
+            else
+            {
+                Debug("JSON response: {0}", response.Content);
+                return JsonConvert.DeserializeObject<T2>(response.Content);
+            }
+        }
         public override async Task<T> GsqlHttpGetAsync<T>(string query)
         {
             var request = new RestRequest(query, Method.GET);

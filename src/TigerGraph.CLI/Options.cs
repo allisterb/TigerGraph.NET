@@ -84,12 +84,24 @@ namespace TigerGraph.CLI
         [Option("tid", Required = false, HelpText = "The optional target vertex id.")]
         public string Tid { get; set; }
     }
-#if WINDOWS && NET461
+    
+    #if WINDOWS && NET461
     [Verb("winevt", HelpText = "Ingest Windows event log data.")]
     public class WinEvtOptions : ApiOptions
     {
         [Option("sysmon", Required = false, HelpText = "Ingest event log data from the SysMon program.")]
         public bool SysMon { get; set; }
     }
-#endif
+    #endif
+    
+    [Verb("upsert", HelpText = "Upsert vertices and edges into graph.")]
+    public class UpsertOptions : ApiOptions
+    {
+        [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph.")]
+        public string Graph { get; set; }
+
+        [Option('f', "file", Required = true, HelpText = "File containing the JSON data to upsert.")]
+        public string File { get; set; }
+    }
+
 }

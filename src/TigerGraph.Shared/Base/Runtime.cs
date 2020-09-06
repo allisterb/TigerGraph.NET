@@ -70,14 +70,19 @@ namespace TigerGraph.Base
             }
         }
 
+        [DebuggerStepThrough]
         public static void Info(string messageTemplate, params object[] args) => Logger.Info(messageTemplate, args);
 
+        [DebuggerStepThrough]
         public static void Debug(string messageTemplate, params object[] args) => Logger.Debug(messageTemplate, args);
 
+        [DebuggerStepThrough]
         public static void Error(string messageTemplate, params object[] args) => Logger.Error(messageTemplate, args);
 
+        [DebuggerStepThrough]
         public static void Error(Exception ex, string messageTemplate, params object[] args) => Logger.Error(ex, messageTemplate, args);
 
+        [DebuggerStepThrough]
         public static Logger.Op Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
 
 

@@ -342,3 +342,4 @@ healthchecksdb
 /gsql_client.jar
 /src/TigerGraph.CLI/Properties/launchSettings.json
 /scripts/setvars.bat
+/User.json

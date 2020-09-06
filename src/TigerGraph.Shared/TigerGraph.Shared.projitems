@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Edges.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Endpoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Schema.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Upsert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Vertices.cs" />
   </ItemGroup>
 </Project>

@@ -72,6 +72,7 @@ namespace TigerGraph
         public override void Complete()
         {
             Op.Complete();
+            isCompleted = true;
         }
 
         public override void Dispose()
@@ -83,7 +84,6 @@ namespace TigerGraph
         }
 
         protected Operation Op;
-
     }
 }
 

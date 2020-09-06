@@ -50,9 +50,9 @@ namespace TigerGraph.CLI
             }
             PrintLogo();
 #if WINDOWS && NET461
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, WinEvtOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions, WinEvtOptions>(args);
 #else
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions>(args);
 #endif
             result.WithParsed<ApiOptions>(o =>
             {
@@ -82,6 +82,10 @@ namespace TigerGraph.CLI
             .WithParsed<WinEvtOptions>(o =>
             {
                 Exit(WinEvt(o).Result);
+            })
+            .WithParsed<UpsertOptions>(o =>
+            {
+                Exit(Upsert(o).Result);
             })
 #endif
 
@@ -268,7 +272,7 @@ namespace TigerGraph.CLI
             return ExitResult.SUCCESS;
         }
 
-#if WINDOWS && NET461
+        #if WINDOWS && NET461
         static async Task<ExitResult> WinEvt(WinEvtOptions o)
         {
             var path = Environment.ExpandEnvironmentVariables(SysMonEvtLogPath);
@@ -287,6 +291,24 @@ namespace TigerGraph.CLI
             }
         }
         #endif
+
+        static async Task<ExitResult> Upsert(UpsertOptions o)
+        {
+            if (!File.Exists(o.File))
+            {
+                Error("Could not find the file {0}.", o.File);
+                return ExitResult.INVALID_OPTIONS;
+            }
+            Models.Upsert data;
+            using (var op = Begin("Reading JSON data from file {0}", o.File))
+            {
+                data = JsonConvert.DeserializeObject<Models.Upsert>(File.ReadAllText(o.File));
+                op.Complete();
+            }
+            var r = await ApiClient.Upsert(o.Graph, data, true, false, false);
+            return ExitResult.SUCCESS;
+            
+        }
         #region Get parameters
         static string GetToken(ApiOptions o)
         {
@@ -368,6 +390,7 @@ namespace TigerGraph.CLI
             }
         }
         #endregion
+
         static void PrintLogo()
         {
             CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
@@ -404,11 +427,13 @@ namespace TigerGraph.CLI
 
         #region Properties
         public static string SysMonEvtLogPath { get; } = "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx";
-        
-        #if WINDOWS && NET461
-        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(WinEvtOptions) };
+
+#if WINDOWS && NET461
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), 
+            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(WinEvtOptions) };
 #else
-        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions)};
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), 
+            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions)};
 #endif
 
         static Dictionary<string, Type> OptionTypesMap { get; } = new Dictionary<string, Type>();

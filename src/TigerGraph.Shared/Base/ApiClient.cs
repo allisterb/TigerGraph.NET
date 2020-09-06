@@ -25,6 +25,8 @@ namespace TigerGraph.Base
         public abstract Task<T> RestHttpGetAsync<T>(string query);
 
         public abstract Task<T> GsqlHttpGetAsync<T>(string query);
+
+        public abstract Task<T2> RestHttpPostAsync<T1, T2>(string query, T1 data);
         #endregion
 
         #region Properties
@@ -161,7 +163,8 @@ namespace TigerGraph.Base
             }
             else if (string.IsNullOrEmpty(targetVertexType) && string.IsNullOrEmpty(targetVertexId) && !string.IsNullOrEmpty(edgeType))
             {
-                using (var op = Begin("Get {0} edges for source {1} vertex with id {2} to target {3} vertex with id {4} for graph {5} from server {6}", edgeType, sourceVertexType, sourceVertexId, targetVertexType, targetVertexId, graphName, RestServerUrl))
+                using (var op = Begin("Get {0} edges for source {1} vertex with id {2} to target {3} vertex with id {4} for graph {5} from server {6}", 
+                    edgeType, sourceVertexType, sourceVertexId, targetVertexType, targetVertexId, graphName, RestServerUrl))
                 {
                     var query = "graph/" + graphName + "/edges"
                         + "/" + (sourceVertexType ?? throw new ArgumentException("The source vertex type parameter cannot be null."))
@@ -173,6 +176,20 @@ namespace TigerGraph.Base
                 }
             }
             else throw new ArgumentException(string.Format("Unsupported arguments: Edge type:{0} Target Vertex Type: {1} Target Vertex ID:{2}", edgeType, targetVertexType, targetVertexId));
+        }
+
+        public async Task<UpsertResult> Upsert(string graphName, Upsert data, bool? ack, bool? new_vertex_only, bool? vertex_must_exist)
+        {
+            int vc = data.vertices != null ? data.vertices.Count : 0;
+            int ec = data.edges != null ? data.edges.Count : 0;
+            using (var op = Begin("Upsert {0} vertices and {1} edges into graph {2} on server {3}", vc, ec, graphName, RestServerUrl))
+            {
+                var query = "graph/" + graphName;
+                if (ack.HasValue) query += "?ack=" + ack.Value;
+                var response = await RestHttpPostAsync<Upsert, UpsertResult>(query, data);
+                op.Complete();
+                return response;
+            }
         }
         #endregion
     }
