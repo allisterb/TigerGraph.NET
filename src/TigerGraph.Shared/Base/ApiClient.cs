@@ -180,12 +180,19 @@ namespace TigerGraph.Base
 
         public async Task<UpsertResult> Upsert(string graphName, Upsert data, bool? ack, bool? new_vertex_only, bool? vertex_must_exist)
         {
-            int vc = data.vertices != null ? data.vertices.Count : 0;
-            int ec = data.edges != null ? data.edges.Count : 0;
+            if (data.vertices == null)
+            {
+                data.vertices = new VerticesUpsert();
+            }
+            if (data.edges == null)
+            {
+                data.edges = new EdgesUpsert();
+            }
+            int vc = data.vertices.Count;
+            int ec = data.edges.Count;
             using (var op = Begin("Upsert {0} vertices and {1} edges into graph {2} on server {3}", vc, ec, graphName, RestServerUrl))
             {
                 var query = "graph/" + graphName;
-                if (ack.HasValue) query += "?ack=" + ack.Value;
                 var response = await RestHttpPostAsync<Upsert, UpsertResult>(query, data);
                 op.Complete();
                 return response;

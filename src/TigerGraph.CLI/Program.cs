@@ -232,7 +232,7 @@ namespace TigerGraph.CLI
                 }
                 else
                 {
-                    Info("{0} vertices:\n{1}}", o.Vertex, JsonConvert.SerializeObject(r.results));
+                    Info("{0} vertices:\n{1}", o.Vertex, JsonConvert.SerializeObject(r.results));
                 }
             }
             else
@@ -249,19 +249,19 @@ namespace TigerGraph.CLI
             {
                 if (string.IsNullOrEmpty(o.Edge) && string.IsNullOrEmpty(o.Target) && string.IsNullOrEmpty(o.Tid))
                 {
-                    Info("All edges from source {0} vertex with id {1}:\n{2}}", o.Source, o.Id, JsonConvert.SerializeObject(r.results));
+                    Info("All edges from source {0} vertex with id {1}:\n{2}", o.Source, o.Id, JsonConvert.SerializeObject(r.results));
                 }
                 else if (!string.IsNullOrEmpty(o.Edge) && string.IsNullOrEmpty(o.Target) && string.IsNullOrEmpty(o.Tid))
                 {
-                    Info("{0} edges from source {1} vertex with id {2}:\n{3}}", o.Edge, o.Source, o.Id, JsonConvert.SerializeObject(r.results));
+                    Info("{0} edges from source {1} vertex with id {2}:\n{3}", o.Edge, o.Source, o.Id, JsonConvert.SerializeObject(r.results));
                 }
                 else if (string.IsNullOrEmpty(o.Edge) && !string.IsNullOrEmpty(o.Target) && !string.IsNullOrEmpty(o.Tid))
                 {
-                    Info("All edges from source {0} vertex with id {1} to target {2} vertex with id {3}:\n{4}}", o.Source, o.Id, o.Target, o.Tid, JsonConvert.SerializeObject(r.results));
+                    Info("All edges from source {0} vertex with id {1} to target {2} vertex with id {3}:\n{4}", o.Source, o.Id, o.Target, o.Tid, JsonConvert.SerializeObject(r.results));
                 }
                 else if (!string.IsNullOrEmpty(o.Edge) && !string.IsNullOrEmpty(o.Target) && !string.IsNullOrEmpty(o.Tid))
                 {
-                    Info("{0} edges from source {1} vertex with id {2} to target {3} vertex with id {4}:\n{5}}", o.Edge, o.Source, o.Id, o.Target, o.Tid, JsonConvert.SerializeObject(r.results));
+                    Info("{0} edges from source {1} vertex with id {2} to target {3} vertex with id {4}:\n{5}", o.Edge, o.Source, o.Id, o.Target, o.Tid, JsonConvert.SerializeObject(r.results));
                 }
                 else throw new InvalidOperationException("Unsupported CLI options combination.");
             }
@@ -306,8 +306,20 @@ namespace TigerGraph.CLI
                 op.Complete();
             }
             var r = await ApiClient.Upsert(o.Graph, data, true, false, false);
-            return ExitResult.SUCCESS;
-            
+            if (!r.error)
+            {
+                for(int i = 0; i < r.results.Count(); i++)
+                {
+                    Info("Successfully upserted {0} {1} vertices to graph {2} at {3}.", r.results[i].accepted_vertices, data.vertices.Keys.ElementAt(i), o.Graph, GetRestServerUrl(o));
+                }
+                return ExitResult.SUCCESS;
+            }
+            else
+            {
+                Error("Failed to upsert data: {0} ({1}).", r.message, r.code);
+                return ExitResult.NOT_FOUND_OR_SERVER_ERROR;
+            }
+
         }
         #region Get parameters
         static string GetToken(ApiOptions o)
@@ -393,7 +405,7 @@ namespace TigerGraph.CLI
 
         static void PrintLogo()
         {
-            CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph"), Color.Blue);
+            CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph.NET"), Color.Blue);
             CO.WriteLine("v{0}", ApiClient.AssemblyVersion.ToString(3), Color.Blue);
         }
 

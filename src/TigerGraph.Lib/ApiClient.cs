@@ -65,7 +65,8 @@ namespace TigerGraph
         public override async Task<T2> RestHttpPostAsync<T1, T2>(string query, T1 data)
         {
             var request = new RestRequest(query, Method.POST, DataFormat.Json);
-            request.AddJsonBody(data);
+            request.AddHeader("Accept", "application/json");
+            request.AddParameter("application/json", JsonConvert.SerializeObject(data), ParameterType.RequestBody);
             Debug("HTTP POST:{0}", RestServerUrl.ToString() + query);
             IRestResponse response = await RestClient.ExecuteAsync(request);
             if (response.ErrorException != null)

@@ -26,7 +26,7 @@ namespace TigerGraph.Models
         public static readonly string min = "min";
     }
 
-    public class VerticesUpsert : Dictionary<string, Dictionary<string, UpsertAttr>> { }
+    public class VerticesUpsert : Dictionary<string, Dictionary<string, Dictionary<string, UpsertAttr>>> { }
 
     public class EdgesUpsert : Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, UpsertAttr>>>>> { }
 
@@ -39,6 +39,16 @@ namespace TigerGraph.Models
 
     public class UpsertResult
     {
+        public Version version { get; set; }
+        public bool error { get; set; }
+        public string message { get; set; }
+        public UpsertResultCount[] results { get; set; }
+        public string code { get; set; }
+    }
+
+
+    public class UpsertResultCount
+    {
         public int accepted_vertices { get; set; }
         public int accepted_edges { get; set; }
     }
@@ -50,4 +60,14 @@ namespace TigerGraph.Models
         public string v_type { get; set; }
         public Dictionary<string, ValueTuple<object, string>> attributes { get; set; }
     }
+
+
+    public class UpsertError
+    {
+        public Version version { get; set; }
+        public bool error { get; set; }
+        public string message { get; set; }
+        public string code { get; set; }
+    }
+
 }
