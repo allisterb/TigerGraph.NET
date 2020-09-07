@@ -22,7 +22,7 @@ namespace TigerGraph.CLI
         {
             SysMonLogQuery = new EventLogQuery(Program.SysMonEvtLogPath, PathType.FilePath);
             EventData = eventData;
-            EventData.AddVertexTypes("User", "Process", "Image", "Logon");
+            EventData.AddVertexTypes("UserLogon", "Process", "Image");
             Initialized = true;
         }
 
@@ -42,8 +42,16 @@ namespace TigerGraph.CLI
                         {
                             case 1:
                                 Debug("Reading {0} event properties {1}.", "Process Create", record.Properties.Select((p, i) => i.ToString() + ":" + p.Value));
-                                var processId = (string) record.Properties[2].Value;
-                                var attrs = new Dictionary<string, object>();
+                                var userName = ((string) record.Properties[12].Value);
+                                var logonGuid = ((Guid)record.Properties[13].Value).ToString();
+                                var logonId = ((ulong)record.Properties[14].Value);
+                                if (!EventData.vertices["UserLogon"].ContainsKey(logonGuid))
+                                {
+                                    EventData.AddVertex("UserLogon", logonGuid).AddVertexAttributes("UserLogon", logonGuid, UpsertOp.ignore_if_exists, ("Id", logonId), ("Name", userName));
+                                }
+                                var processGuid = ((Guid)record.Properties[2].Value).ToString();
+                                //EventData.AddVertex("Process",)
+                
                                 break;
                             case 3:
                                 Debug("Reading {0} event properties {1}.", "Connection", record.Properties.Select((p, i) => i.ToString() + ":" + p.Value));

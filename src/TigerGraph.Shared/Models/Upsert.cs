@@ -40,22 +40,30 @@ namespace TigerGraph.Models
             vertices = new VerticesUpsert();
             edges = new EdgesUpsert();
         }
-        public VerticesUpsert AddVertexType(string name)
+        public Upsert AddVertexType(string name)
         {
             vertices.Add(name, new Dictionary<string, Dictionary<string, UpsertAttr>>());
-            return vertices;
+            return this;
         }
 
         public void AddVertexTypes(params string[] names) => Array.ForEach(names, (n) => AddVertexType(n));
 
-        public Dictionary<string, UpsertAttr> AddVertex(string typeName, string vertexId)
+        public Upsert AddVertex(string typeName, string vertexId)
         {
             var attrs = new Dictionary<string, UpsertAttr>();
             vertices[typeName].Add(vertexId, attrs);
-            return attrs;
+            return this;
+        }
+
+        public Upsert AddVertexAttributes(string typeName, string vertexId, string vertexOP, params ValueTuple<string, object>[] attrs)
+        {
+            foreach (var kv in attrs)
+            {
+                vertices[typeName][vertexId].Add(kv.Item1, new UpsertAttr() { value = kv.Item2, op = vertexOP});
+            }
+            return this;
         }
     }
-
 
     public class UpsertResult
     {
