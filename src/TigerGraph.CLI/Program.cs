@@ -14,6 +14,7 @@ using Figgle;
 using CommandLine;
 using CommandLine.Text;
 
+using TigerGraph.Models;
 namespace TigerGraph.CLI
 {
     #region Enums
@@ -30,7 +31,7 @@ namespace TigerGraph.CLI
     {
         static Program()
         {
-            foreach(var t in OptionTypes)
+            foreach (var t in OptionTypes)
             {
                 OptionTypesMap.Add(t.Name, t);
             }
@@ -272,7 +273,7 @@ namespace TigerGraph.CLI
             return ExitResult.SUCCESS;
         }
 
-        #if WINDOWS && NET461
+#if WINDOWS && NET461
         static async Task<ExitResult> WinEvt(WinEvtOptions o)
         {
             var path = Environment.ExpandEnvironmentVariables(SysMonEvtLogPath);
@@ -283,14 +284,16 @@ namespace TigerGraph.CLI
             }
             else
             {
-                var winevt = new WinEvtLogReader();
+                EventData = new Upsert();
+                var winevt = new WinEvtLogReader(EventData);
                 Info("Using SysMon event log file at {0}.", path);
                 Info("Reading SysMon event log. Press any key to exit.");
                 winevt.ReadSysMonLog();
+                Info("Stopped reading SysMon event log.");
                 return ExitResult.SUCCESS;
             }
         }
-        #endif
+#endif
 
         static async Task<ExitResult> Upsert(UpsertOptions o)
         {
@@ -299,16 +302,16 @@ namespace TigerGraph.CLI
                 Error("Could not find the file {0}.", o.File);
                 return ExitResult.INVALID_OPTIONS;
             }
-            Models.Upsert data;
+            Upsert data;
             using (var op = Begin("Reading JSON data from file {0}", o.File))
             {
-                data = JsonConvert.DeserializeObject<Models.Upsert>(File.ReadAllText(o.File));
+                data = JsonConvert.DeserializeObject<Upsert>(File.ReadAllText(o.File));
                 op.Complete();
             }
             var r = await ApiClient.Upsert(o.Graph, data, true, false, false);
             if (!r.error)
             {
-                for(int i = 0; i < r.results.Count(); i++)
+                for (int i = 0; i < r.results.Count(); i++)
                 {
                     Info("Successfully upserted {0} {1} vertices to graph {2} at {3}.", r.results[i].accepted_vertices, data.vertices.Keys.ElementAt(i), o.Graph, GetRestServerUrl(o));
                 }
@@ -441,7 +444,7 @@ namespace TigerGraph.CLI
         public static string SysMonEvtLogPath { get; } = "%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx";
 
 #if WINDOWS && NET461
-        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), 
+        static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions),
             typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(WinEvtOptions) };
 #else
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), 
@@ -449,7 +452,9 @@ namespace TigerGraph.CLI
 #endif
 
         static Dictionary<string, Type> OptionTypesMap { get; } = new Dictionary<string, Type>();
-        static ApiClient ApiClient {get; set; }
+        static ApiClient ApiClient { get; set; }
+
+        static Upsert EventData {get; set;}
         #endregion
 
         #region Event Handlers

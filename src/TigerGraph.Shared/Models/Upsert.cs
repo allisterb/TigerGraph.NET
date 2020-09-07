@@ -34,6 +34,26 @@ namespace TigerGraph.Models
     {
         public VerticesUpsert vertices { get; set; }
         public EdgesUpsert edges { get; set; }
+
+        public Upsert()
+        {
+            vertices = new VerticesUpsert();
+            edges = new EdgesUpsert();
+        }
+        public VerticesUpsert AddVertexType(string name)
+        {
+            vertices.Add(name, new Dictionary<string, Dictionary<string, UpsertAttr>>());
+            return vertices;
+        }
+
+        public void AddVertexTypes(params string[] names) => Array.ForEach(names, (n) => AddVertexType(n));
+
+        public Dictionary<string, UpsertAttr> AddVertex(string typeName, string vertexId)
+        {
+            var attrs = new Dictionary<string, UpsertAttr>();
+            vertices[typeName].Add(vertexId, attrs);
+            return attrs;
+        }
     }
 
 
