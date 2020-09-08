@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -23,8 +24,10 @@ namespace TigerGraph.CLI
         SUCCESS = 0,
         UNHANDLED_EXCEPTION = 1,
         INVALID_OPTIONS = 2,
-        UNKNOWN_ERROR = 3,
-        NOT_FOUND_OR_SERVER_ERROR = 4
+        NOT_FOUND = 4,
+        SERVER_ERROR = 5,
+        ERROR_IN_RESULTS = 6,
+        UNKNOWN_ERROR = 7
     }
     #endregion
     class Program : Base.Runtime
@@ -51,9 +54,9 @@ namespace TigerGraph.CLI
             }
             PrintLogo();
 #if WINDOWS && NET461
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions, WinEvtOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions, QueryOptions, WinEvtOptions>(args);
 #else
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions, QueryOptions>(args);
 #endif
             result.WithParsed<ApiOptions>(o =>
             {
@@ -84,12 +87,15 @@ namespace TigerGraph.CLI
             {
                 Exit(WinEvt(o).Result);
             })
+#endif
             .WithParsed<UpsertOptions>(o =>
             {
                 Exit(Upsert(o).Result);
             })
-#endif
-
+            .WithParsed<QueryOptions>(o =>
+            {
+                Exit(Query(o).Result);
+            })
             #region Print options help
             .WithNotParsed((IEnumerable<Error> errors) =>
             {
@@ -280,7 +286,7 @@ namespace TigerGraph.CLI
             if (!File.Exists(path))
             {
                 Error("The SysMon event log file at {0} was not found. Ensure you have installed SysMon on this system.", path);
-                return ExitResult.NOT_FOUND_OR_SERVER_ERROR;
+                return ExitResult.NOT_FOUND;
             }
             else
             {
@@ -294,7 +300,6 @@ namespace TigerGraph.CLI
             }
         }
 #endif
-
         static async Task<ExitResult> Upsert(UpsertOptions o)
         {
             if (!File.Exists(o.File))
@@ -320,9 +325,70 @@ namespace TigerGraph.CLI
             else
             {
                 Error("Failed to upsert data: {0} ({1}).", r.message, r.code);
-                return ExitResult.NOT_FOUND_OR_SERVER_ERROR;
+                return ExitResult.ERROR_IN_RESULTS;
             }
 
+        }
+
+        static async Task<ExitResult> Query(QueryOptions o)
+        {
+            var text = "";
+            Dictionary<string, object> parsed_params = null;
+            if (string.IsNullOrEmpty(o.Text) && string.IsNullOrEmpty(o.File))
+            {
+                Error("You must specify either the text of the query using {0} or the file containing the query source using {1}.", "-t", "-f");
+                return ExitResult.INVALID_OPTIONS;
+
+            }
+            else if (!string.IsNullOrEmpty(o.Text) && !string.IsNullOrEmpty(o.File))
+            {
+                Error("You cannot specify both the -f and -t options for the query.");
+                return ExitResult.INVALID_OPTIONS;
+            }
+            else if (string.IsNullOrEmpty(o.Text) && !string.IsNullOrEmpty(o.File))
+            {
+                if (!File.Exists(o.File))
+                {
+                    Error("Could not find the file {0}.", o.File);
+                    return ExitResult.INVALID_OPTIONS;
+                }
+                else
+                {
+                    text = File.ReadAllText(o.File);
+                }
+            }
+            else
+            {
+                text = o.Text;
+            }
+            
+            parsed_params  = Options.Parse(o.Parameters);
+            if (parsed_params.Count == 0)
+            {
+                Error("There was an error parsing the query parameters {0}.", o.Parameters);
+                return ExitResult.INVALID_OPTIONS;
+            }
+            else if (parsed_params.Where(p => p.Key == "_ERROR_").Count() > 0)
+            {
+                string error_params = parsed_params.Where(p => p.Key == "_ERROR_").Select(kv => (string)kv.Value).Aggregate((s1, s2) => s1 + Environment.NewLine + s2);
+                Error("There was an error parsing the following options {0}.", error_params);
+                parsed_params = parsed_params.Where(p => p.Key != "_ERROR_").ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            }
+            using (var op = Begin("Executing query {0} on server {1}.", text, GetGsqlServerUrl(o)))
+            {
+                var r = await ApiClient.Query(text, parsed_params);
+                op.Complete();
+                if (!r.error)
+                {
+                    Info("Query results: {0}.", r.results);
+                    return ExitResult.SUCCESS;
+                }
+                else
+                {
+                    Error("The query returned an error: {0}.", r.message);
+                    return ExitResult.ERROR_IN_RESULTS;
+                }
+            }
         }
         #region Get parameters
         static string GetToken(ApiOptions o)
@@ -445,10 +511,10 @@ namespace TigerGraph.CLI
 
 #if WINDOWS && NET461
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions),
-            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(WinEvtOptions) };
+            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(QueryOptions), typeof(WinEvtOptions) };
 #else
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), 
-            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions)};
+            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(QueryOptions)};
 #endif
 
         static Dictionary<string, Type> OptionTypesMap { get; } = new Dictionary<string, Type>();

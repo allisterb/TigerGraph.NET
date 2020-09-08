@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 
 using CommandLine;
 using CommandLine.Text;
@@ -11,6 +11,30 @@ namespace TigerGraph.CLI
     {
         [Option('d', "debug", Required = false, HelpText = "Enable debug mode.")]
         public bool Debug { get; set; }
+
+        public static Dictionary<string, object> Parse(string o)
+        {
+            Dictionary<string, object> audit_options = new Dictionary<string, object>();
+            Regex re = new Regex(@"(\w+)\=([^\,]+)", RegexOptions.Compiled);
+            string[] pairs = o.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string s in pairs)
+            {
+                Match m = re.Match(s);
+                if (!m.Success)
+                {
+                    audit_options.Add("_ERROR_", s);
+                }
+                else if (audit_options.ContainsKey(m.Groups[1].Value))
+                {
+                    audit_options[m.Groups[1].Value] = m.Groups[2].Value;
+                }
+                else
+                {
+                    audit_options.Add(m.Groups[1].Value, m.Groups[2].Value);
+                }
+            }
+            return audit_options;
+        }
     }
 
     public class ApiOptions : Options
@@ -104,4 +128,16 @@ namespace TigerGraph.CLI
         public string File { get; set; }
     }
 
+    [Verb("exec", HelpText = "Execute a GSQL query on the specified graph using the specified parameters.")]
+    public class QueryOptions : ApiOptions
+    {
+        [Option('t', "text", Required = false, HelpText = "The text of the query to run.")]
+        public string Text { get; set; }
+
+        [Option('f', "file", Required = false, HelpText = "A file containing the text of the query to run.")]
+        public string File { get; set; }
+
+        [Option('p', "params", Required = false, HelpText = "A comma-delimited list of query parameters in the form p1=v1,p2=v2,...")]
+        public string Parameters { get; set; }
+    }
 }

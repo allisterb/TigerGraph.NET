@@ -79,6 +79,7 @@ namespace TigerGraph
                 return JsonConvert.DeserializeObject<T2>(response.Content);
             }
         }
+
         public override async Task<T> GsqlHttpGetAsync<T>(string query)
         {
             var request = new RestRequest(query, Method.GET);
@@ -91,6 +92,41 @@ namespace TigerGraph
             else if (!response.IsSuccessful)
             {
                 throw new Exception($"HTTP request to GSQL server at {GsqlServerUrl} was not successfule: {response.ErrorMessage}");
+            }
+            else
+            {
+                Debug("JSON response: {0}", response.Content);
+                return JsonConvert.DeserializeObject<T>(response.Content);
+            }
+        }
+
+        public override async Task<T2> GsqlHttpPostAsync<T1, T2>(string query, T1 data)
+        {
+            var request = new RestRequest(query, Method.POST, DataFormat.Json);
+            request.AddHeader("Accept", "application/json");
+            request.AddParameter("application/json", JsonConvert.SerializeObject(data), ParameterType.RequestBody);
+            Debug("HTTP POST:{0}", GsqlServerUrl.ToString() + query);
+            IRestResponse response = await GsqlClient.ExecuteAsync(request);
+            if (response.ErrorException != null)
+            {
+                throw response.ErrorException;
+            }
+            else
+            {
+                Debug("JSON response: {0}", response.Content);
+                return JsonConvert.DeserializeObject<T2>(response.Content);
+            }
+        }
+
+        public override async Task<T> GsqlHttpPostStringAsync<T>(string query, string data)
+        {
+            var request = new RestRequest(query, Method.POST, DataFormat.None);
+            request.AddParameter("text/plain", data, ParameterType.RequestBody);
+            Debug("HTTP POST:{0}", GsqlServerUrl.ToString() + query);
+            IRestResponse response = await GsqlClient.ExecuteAsync(request);
+            if (response.ErrorException != null)
+            {
+                throw response.ErrorException;
             }
             else
             {

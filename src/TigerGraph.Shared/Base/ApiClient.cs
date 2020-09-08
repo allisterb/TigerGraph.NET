@@ -27,6 +27,10 @@ namespace TigerGraph.Base
         public abstract Task<T> GsqlHttpGetAsync<T>(string query);
 
         public abstract Task<T2> RestHttpPostAsync<T1, T2>(string query, T1 data);
+
+        public abstract Task<T2> GsqlHttpPostAsync<T1, T2>(string query, T1 data);
+
+        public abstract Task<T> GsqlHttpPostStringAsync<T>(string query, string data);
         #endregion
 
         #region Properties
@@ -197,6 +201,20 @@ namespace TigerGraph.Base
                 op.Complete();
                 return response;
             }
+        }
+
+        public async Task<QueryResult> Query(string text, Dictionary<string, object> parameters)
+        {
+            var _p = "";
+            foreach(var p in parameters)
+            {
+                _p += p.Key + "=" + p.Value.ToString() + "&";
+            }
+            _p.TrimEnd('&');            
+            var query = "gsql/interpreted_query" + (parameters.Count > 0 ? _p : "");
+            var response = await GsqlHttpPostStringAsync<QueryResult>(query, text);
+            return response;
+            
         }
         #endregion
     }
