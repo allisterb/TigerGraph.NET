@@ -1,2 +1,2 @@
 #!/bin/bash
-dotnet src/TigerGraph.CLI/bin/Debug/netcoreapp3.1/TigerGraph.CLI.dll
+dotnet src/TigerGraph.CLI/bin/Debug/netcoreapp3.1/TigerGraph.CLI.dll $*
