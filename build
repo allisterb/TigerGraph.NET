@@ -2,6 +2,12 @@
 
 set -e 
 
+echo Building CLI...
 cd src/TigerGraph.CLI
+dotnet build /p:Configuration=Debug $*
+cd ../../
+
+echo Building Proxy...
+cd src/TigerGraph.Proxy
 dotnet build /p:Configuration=Debug $*
 cd ../../
