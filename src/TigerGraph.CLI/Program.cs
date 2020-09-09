@@ -100,6 +100,7 @@ namespace TigerGraph.CLI
             .WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
+                help.Heading = new HeadingInfo("TigerGraph.NET", ApiClient.AssemblyVersion.ToString(3));
                 help.Copyright = "";
                 if (errors.Any(e => e.Tag == ErrorType.VersionRequestedError))
                 {
