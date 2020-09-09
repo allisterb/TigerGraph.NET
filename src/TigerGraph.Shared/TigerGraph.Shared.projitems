@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Runtime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TupleConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IApiClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\EchoResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Edges.cs" />

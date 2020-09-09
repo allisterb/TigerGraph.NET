@@ -9,7 +9,12 @@
     <Authors>Allister Beharry</Authors>
     <Version>0.2.0</Version>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Framework)' == 'NET461' ">
+    <DefineConstants>NET461</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Framework)' == 'netstandard2.0' ">
+    <DefineConstants>NETSTANDARD</DefineConstants>
+  </PropertyGroup>
   <Import Project="..\TigerGraph.Shared\TigerGraph.Shared.projitems" Label="Shared" />
   <ItemGroup>
     <PackageReference Include="Humanizer.Core" Version="2.7.9" />

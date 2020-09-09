@@ -14,7 +14,7 @@ namespace TigerGraph.CLI
 
         public static Dictionary<string, object> Parse(string o)
         {
-            Dictionary<string, object> audit_options = new Dictionary<string, object>();
+            Dictionary<string, object> options = new Dictionary<string, object>();
             Regex re = new Regex(@"(\w+)\=([^\,]+)", RegexOptions.Compiled);
             string[] pairs = o.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string s in pairs)
@@ -22,18 +22,18 @@ namespace TigerGraph.CLI
                 Match m = re.Match(s);
                 if (!m.Success)
                 {
-                    audit_options.Add("_ERROR_", s);
+                    options.Add("_ERROR_", s);
                 }
-                else if (audit_options.ContainsKey(m.Groups[1].Value))
+                else if (options.ContainsKey(m.Groups[1].Value))
                 {
-                    audit_options[m.Groups[1].Value] = m.Groups[2].Value;
+                    options[m.Groups[1].Value] = m.Groups[2].Value;
                 }
                 else
                 {
-                    audit_options.Add(m.Groups[1].Value, m.Groups[2].Value);
+                    options.Add(m.Groups[1].Value, m.Groups[2].Value);
                 }
             }
-            return audit_options;
+            return options;
         }
     }
 

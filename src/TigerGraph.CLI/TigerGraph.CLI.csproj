@@ -14,6 +14,9 @@
   <PropertyGroup Condition=" '$(Framework)' == 'NET461' ">
     <DefineConstants>NET461</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Framework)' == 'netstandard2.0' ">
+    <DefineConstants>NETSTANDARD</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>
