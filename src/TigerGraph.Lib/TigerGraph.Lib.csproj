@@ -7,11 +7,11 @@
     <FileVersion>0.1.0.0</FileVersion>
     <Product>TigerGraph.NET</Product>
     <Authors>Allister Beharry</Authors>
-    <Version>0.1.0-alpha</Version>
+    <Version>0.1.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIcon>tg-icon.png</PackageIcon>
     <PackageIconUrl />
-    <PackageId>TigerGraph.Lib</PackageId>
+    <PackageId>TigerGraph.NET</PackageId>
     <Description>A .NET client library for TigerGraph</Description>
     <PackageProjectUrl>https://github.com/allisterb/TigerGraph.NET</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
