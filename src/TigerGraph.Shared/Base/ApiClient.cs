@@ -211,7 +211,7 @@ namespace TigerGraph.Base
                 _p += p.Key + "=" + p.Value.ToString() + "&";
             }
             _p.TrimEnd('&');            
-            var query = "gsql/interpreted_query" + (parameters.Count > 0 ? _p : "");
+            var query = "gsqlserver/interpreted_query" + (parameters.Count > 0 ? _p : "");
             var response = await GsqlHttpPostStringAsync<QueryResult>(query, text);
             return response;
             

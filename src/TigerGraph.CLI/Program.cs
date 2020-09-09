@@ -332,20 +332,20 @@ namespace TigerGraph.CLI
 
         static async Task<ExitResult> Query(QueryOptions o)
         {
-            var text = "";
-            Dictionary<string, object> parsed_params = null;
-            if (string.IsNullOrEmpty(o.Text) && string.IsNullOrEmpty(o.File))
+            var source = "";
+            Dictionary<string, object> parsed_params = new Dictionary<string, object>();
+            if (string.IsNullOrEmpty(o.Source) && string.IsNullOrEmpty(o.File))
             {
                 Error("You must specify either the text of the query using {0} or the file containing the query source using {1}.", "-t", "-f");
                 return ExitResult.INVALID_OPTIONS;
 
             }
-            else if (!string.IsNullOrEmpty(o.Text) && !string.IsNullOrEmpty(o.File))
+            else if (!string.IsNullOrEmpty(o.Source) && !string.IsNullOrEmpty(o.File))
             {
                 Error("You cannot specify both the -f and -t options for the query.");
                 return ExitResult.INVALID_OPTIONS;
             }
-            else if (string.IsNullOrEmpty(o.Text) && !string.IsNullOrEmpty(o.File))
+            else if (string.IsNullOrEmpty(o.Source) && !string.IsNullOrEmpty(o.File))
             {
                 if (!File.Exists(o.File))
                 {
@@ -354,29 +354,32 @@ namespace TigerGraph.CLI
                 }
                 else
                 {
-                    text = File.ReadAllText(o.File);
+                    source = File.ReadAllText(o.File);
                 }
             }
             else
             {
-                text = o.Text;
+                source = o.Source;
             }
-            
-            parsed_params  = Options.Parse(o.Parameters);
-            if (parsed_params.Count == 0)
+            if (!string.IsNullOrEmpty(o.Parameters))
             {
-                Error("There was an error parsing the query parameters {0}.", o.Parameters);
-                return ExitResult.INVALID_OPTIONS;
+                parsed_params = Options.Parse(o.Parameters);
+
+                if (parsed_params.Count == 0)
+                {
+                    Error("There was an error parsing the query parameters {0}.", o.Parameters);
+                    return ExitResult.INVALID_OPTIONS;
+                }
+                else if (parsed_params.Where(p => p.Key == "_ERROR_").Count() > 0)
+                {
+                    string error_params = parsed_params.Where(p => p.Key == "_ERROR_").Select(kv => (string)kv.Value).Aggregate((s1, s2) => s1 + Environment.NewLine + s2);
+                    Error("There was an error parsing the following options {0}.", error_params);
+                    parsed_params = parsed_params.Where(p => p.Key != "_ERROR_").ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                }
             }
-            else if (parsed_params.Where(p => p.Key == "_ERROR_").Count() > 0)
+            using (var op = Begin("Executing query {0} on server {1}.", source, GetGsqlServerUrl(o)))
             {
-                string error_params = parsed_params.Where(p => p.Key == "_ERROR_").Select(kv => (string)kv.Value).Aggregate((s1, s2) => s1 + Environment.NewLine + s2);
-                Error("There was an error parsing the following options {0}.", error_params);
-                parsed_params = parsed_params.Where(p => p.Key != "_ERROR_").ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            }
-            using (var op = Begin("Executing query {0} on server {1}.", text, GetGsqlServerUrl(o)))
-            {
-                var r = await ApiClient.Query(text, parsed_params);
+                var r = await ApiClient.Query(source, parsed_params);
                 op.Complete();
                 if (!r.error)
                 {
@@ -385,7 +388,7 @@ namespace TigerGraph.CLI
                 }
                 else
                 {
-                    Error("The query returned an error: {0}.", r.message);
+                    Error("The query returned an error: {0}", r.message);
                     return ExitResult.ERROR_IN_RESULTS;
                 }
             }

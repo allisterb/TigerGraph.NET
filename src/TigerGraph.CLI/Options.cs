@@ -132,7 +132,7 @@ namespace TigerGraph.CLI
     public class QueryOptions : ApiOptions
     {
         [Option('s', "source", Required = false, HelpText = "The GSQL query to run.")]
-        public string Text { get; set; }
+        public string Source { get; set; }
 
         [Option('f', "file", Required = false, HelpText = "A file containing the GSQL query to run.")]
         public string File { get; set; }
