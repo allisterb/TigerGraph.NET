@@ -49,6 +49,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bridge", "Bridge", "{3DEB50
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TigerGraph.Lib.Bridge", "TigerGraph.Lib.Bridge\TigerGraph.Lib.Bridge.csproj", "{AB84D43F-0D40-4520-B90C-B6058813A697}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TigerGraph.Web.Bridge.JSDemo", "TigerGraph.Web.Bridge.JSDemo\TigerGraph.Web.Bridge.JSDemo.csproj", "{49B33AC6-DEF8-4B69-9014-C896F0E01E6E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TigerGraph.Shared\TigerGraph.Shared.projitems*{308f54f5-177c-413b-9875-c3312ef0563e}*SharedItemsImports = 13
@@ -87,6 +89,10 @@ Global
 		{AB84D43F-0D40-4520-B90C-B6058813A697}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB84D43F-0D40-4520-B90C-B6058813A697}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB84D43F-0D40-4520-B90C-B6058813A697}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B33AC6-DEF8-4B69-9014-C896F0E01E6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B33AC6-DEF8-4B69-9014-C896F0E01E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B33AC6-DEF8-4B69-9014-C896F0E01E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B33AC6-DEF8-4B69-9014-C896F0E01E6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +106,7 @@ Global
 		{5B7ADEF4-73D6-46F5-9CEB-A990C2354BA6} = {BE70951D-7B32-440F-ACB8-9B9E5A77CE2B}
 		{13B76F1A-8C28-4DE8-AFD4-5B4C74848BE3} = {2568DEB9-4834-4B4F-8442-DF9B1387863F}
 		{AB84D43F-0D40-4520-B90C-B6058813A697} = {3DEB503F-7073-4EA5-A4E9-1E85F1DD0869}
+		{49B33AC6-DEF8-4B69-9014-C896F0E01E6E} = {3DEB503F-7073-4EA5-A4E9-1E85F1DD0869}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1144B40A-C699-4636-81B0-D2DF608CC04F}
