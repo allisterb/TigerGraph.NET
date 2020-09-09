@@ -537,8 +537,8 @@ namespace TigerGraph.CLI
 
         static void PrintLogo()
         {
-            CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph.NET"), Color.Blue);
-            CO.WriteLine("v{0}", ApiClient.AssemblyVersion.ToString(3), Color.Blue);
+            CO.WriteLine(FiggleFonts.Chunky.Render("TigerGraph.NET"), Color.OrangeRed);
+            CO.WriteLine("v{0}", ApiClient.AssemblyVersion.ToString(3), Color.OrangeRed);
         }
 
         public static void Exit(ExitResult result)
