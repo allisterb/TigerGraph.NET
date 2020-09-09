@@ -16,13 +16,27 @@ namespace TigerGraph.Proxy
 {
     public class ProxyController : ControllerBase
     {
-        private static ILogger<ProxyController> log;
+        #region Constructors
         public ProxyController(ILogger<ProxyController> logger)
         {
             log = logger;
         }
 
-        private HttpProxyOptions _httpOptions = HttpProxyOptionsBuilder.Instance
+        #endregion
+
+        #region Actions
+        [Route("p/{**rest}")]
+        public Task RestServerProxy(string rest)
+        {
+            log.LogInformation("Proxying request {0} to {1}...", rest, $"{Program.TG_REST_SERVER_URL}{rest}");
+            return this.HttpProxyAsync($"{Program.TG_REST_SERVER_URL}/{rest}", _restServerHttpOptions);
+        }
+        #endregion
+
+        #region Fields
+        private static ILogger<ProxyController> log;
+
+        private HttpProxyOptions _restServerHttpOptions = HttpProxyOptionsBuilder.Instance
         .WithShouldAddForwardedHeaders(false)
         .WithHttpClientName("TigerGraphClient")
         .WithIntercept(context =>
@@ -31,8 +45,7 @@ namespace TigerGraph.Proxy
         })
         .WithBeforeSend((c, hrm) =>
         {
-            hrm.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Environment.GetEnvironmentVariable("TG_TOKEN"));
-
+            hrm.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Program.TG_TOKEN);
             return Task.CompletedTask;
         })
         .WithAfterReceive((c, hrm) =>
@@ -48,12 +61,7 @@ namespace TigerGraph.Proxy
             log.LogError(e, "Proxy to {0} error.", c.Request.Query);
             return Task.CompletedTask;
         }).Build();
-
-        [Route("p/{**rest}")]
-        public Task Proxy(string rest)
-        {
-            log.LogInformation("Proxying request {0} to {1}...", rest, $"{Environment.GetEnvironmentVariable("TG_SERVER_URL")}{rest}");
-            return this.HttpProxyAsync($"{Environment.GetEnvironmentVariable("TG_SERVER_URL")}{rest}", _httpOptions);
-        }
+        #endregion
     }
+
 }
