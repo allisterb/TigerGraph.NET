@@ -235,23 +235,46 @@ namespace TigerGraph.CLI
 
         static async Task<ExitResult> Vertices(VerticesOptions o)
         {
-            var r = await ApiClient.Vertices(o.Graph, o.Vertex, o.Id);
-            if (!r.error)
+            if (!o.Count)
             {
-                if (!string.IsNullOrEmpty(o.Id))
+                var r = await ApiClient.Vertices(o.Graph, o.Vertex, o.Id);
+                if (!r.error)
                 {
-                    Info("{0} vertex with id {1}:\n{2}}", o.Vertex, o.Id, JsonConvert.SerializeObject(r.results));
+                    if (!string.IsNullOrEmpty(o.Id))
+                    {
+                        Info("{0} vertex with id {1}:\n{2}}", o.Vertex, o.Id, JsonConvert.SerializeObject(r.results));
+                    }
+                    else
+                    {
+                        Info("{0} vertices:\n{1}", o.Vertex, JsonConvert.SerializeObject(r.results));
+                    }
                 }
                 else
                 {
-                    Info("{0} vertices:\n{1}", o.Vertex, JsonConvert.SerializeObject(r.results));
+                    Error("Error occurred retrieving {0} vertex data in graph {1} from {2}: {3}.", o.Vertex, o.Graph, o.GsqlServerUrl, r.message);
                 }
+                return ExitResult.SUCCESS;
+            }
+            else if (!string.IsNullOrEmpty(o.Id))
+            {
+                Error("You cannot specify the vertex id and also count the number of vertices.");
+                return ExitResult.INVALID_OPTIONS;
+           
             }
             else
             {
-                Error("Error occurred retrieving {0} vertex data in graph {1} from {2}: {3}.", o.Vertex, o.Graph, o.GsqlServerUrl, r.message);
+                var r = await ApiClient.VerticesCount(o.Graph, o.Vertex);
+                if (!r.error)
+                {
+                    Info("{0} vertices: {1}.", o.Vertex, r.results.Select(c => c.count));
+                    return ExitResult.SUCCESS;
+                }
+                else
+                {
+                    Error("Error retrieving {0} vertex count for graph {1}: {2}.", o.Vertex, o.Graph, r.message);
+                    return ExitResult.ERROR_IN_RESULTS;
+                }
             }
-            return ExitResult.SUCCESS;
         }
 
         static async Task<ExitResult> Edges(EdgesOptions o)

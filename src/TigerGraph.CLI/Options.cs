@@ -85,6 +85,9 @@ namespace TigerGraph.CLI
 
         [Option('i', "id", Required = false, HelpText = "A specific vertex or edge id to retrieve.")]
         public string Id { get; set; }
+
+        [Option('c', "count", Required = false, HelpText = "Only count the number of vertices of the specified type.")]
+        public bool Count { get; set; }
     }
 
     [Verb("edges", HelpText = "Get the edges of the specified graph by specifying the source vertices and optionally the edge type and target vertices.")]
@@ -107,6 +110,9 @@ namespace TigerGraph.CLI
 
         [Option("tid", Required = false, HelpText = "The optional target vertex id.")]
         public string Tid { get; set; }
+
+        [Option('c', "count", Required = false, HelpText = "Only count the number of edges that match the specified conditions.")]
+        public bool Count { get; set; }
     }
     
     #if WINDOWS && NET461

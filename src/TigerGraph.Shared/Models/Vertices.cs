@@ -4,7 +4,6 @@ using System.Text;
 
 namespace TigerGraph.Models
 {
-
     public class VerticesResult
     {
         public ServerVersion version { get; set; }
@@ -26,4 +25,20 @@ namespace TigerGraph.Models
         public string v_type { get; set; }
         public Dictionary<string, object> attributes { get; set; }
     }
+
+
+    public class VerticesCountResult
+    {
+        public Version version { get; set; }
+        public bool error { get; set; }
+        public string message { get; set; }
+        public VerticesCount[] results { get; set; }
+    }
+
+    public class VerticesCount
+    {
+        public string v_type { get; set; }
+        public int count { get; set; }
+    }
+
 }

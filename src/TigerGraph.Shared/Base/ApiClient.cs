@@ -107,7 +107,7 @@ namespace TigerGraph.Base
         public async Task<VerticesResult> Vertices(string graphName, string vertexType, string vertexId = "")
         {
             FailIfNotInitialized();
-            using (var op = Begin("Get {0} vertice(s) with id {1} for graph {2} from server {3}", vertexType, string.IsNullOrEmpty(vertexId) ? "*" : vertexId, graphName, RestServerUrl))
+            using (var op = Begin("Get {0} vertices with id {1} for graph {2} from server {3}", vertexType, string.IsNullOrEmpty(vertexId) ? "*" : vertexId, graphName, RestServerUrl))
             {
                 var query = "graph/"+  graphName + "/vertices/" + (vertexType ?? throw new ArgumentException("The vertex type parameter cannot be null."));
                 if (!string.IsNullOrEmpty(vertexId))
@@ -115,6 +115,19 @@ namespace TigerGraph.Base
                     query += "/" + vertexId;
                 }
                 var response = await RestHttpGetAsync<VerticesResult>(query);
+                op.Complete();
+                return response;
+            }
+        }
+
+        public async Task<VerticesCountResult> VerticesCount(string graphName, string vertexType)
+        {
+            FailIfNotInitialized();
+            using (var op = Begin("Get count of {0} vertices for graph {1} from server {2}", vertexType, graphName, RestServerUrl))
+            {
+                var query = "graph/" + graphName + "/vertices/" + (vertexType ?? throw new ArgumentException("The vertex type parameter cannot be null."));
+                query += "?count_only=true";
+                var response = await RestHttpGetAsync<VerticesCountResult>(query);
                 op.Complete();
                 return response;
             }
