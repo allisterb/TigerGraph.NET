@@ -314,19 +314,19 @@ namespace TigerGraph.CLI
                 {
                     if (string.IsNullOrEmpty(o.Edge) && string.IsNullOrEmpty(o.Target) && string.IsNullOrEmpty(o.Tid))
                     {
-                        Info("Count of all edges from source {0} vertex with id {1}:\n{2}", o.Source, o.Id, r.results.Select(e => e.count));
+                        Info("Count of all edges from source {0} vertex with id {1}:\n{2}", o.Source, o.Id, r.results.Where(e => e.count.Value > 0).Select(e => (e.e_type, e.from_id, e.from_type, e.count)));
                     }
                     else if (!string.IsNullOrEmpty(o.Edge) && string.IsNullOrEmpty(o.Target) && string.IsNullOrEmpty(o.Tid))
                     {
-                        Info("Count of {0} edges from source {1} vertex with id {2}:\n{3}", o.Edge, o.Source, o.Id, r.results.Select(e => e.count));
+                        Info("Count of {0} edges from source {1} vertex with id {2}:\n{3}", o.Edge, o.Source, o.Id, r.results.Where(e => e.count.Value > 0).Select(e => (e.e_type, e.from_id, e.from_type, e.count)));
                     }
                     else if (string.IsNullOrEmpty(o.Edge) && !string.IsNullOrEmpty(o.Target) && !string.IsNullOrEmpty(o.Tid))
                     {
-                        Info("Count edges from source {0} vertex with id {1} to target {2} vertex with id {3}:\n{4}", o.Source, o.Id, o.Target, o.Tid, r.results.Select(e => e.count));
+                        Info("Count edges from source {0} vertex with id {1} to target {2} vertex with id {3}:\n{4}", o.Source, o.Id, o.Target, o.Tid, r.results.Where(e => e.count.Value > 0).Select(e => (e.e_type, e.from_id, e.from_type, e.count)));
                     }
                     else if (!string.IsNullOrEmpty(o.Edge) && !string.IsNullOrEmpty(o.Target) && !string.IsNullOrEmpty(o.Tid))
                     {
-                        Info("Count {0} edges from source {1} vertex with id {2} to target {3} vertex with id {4}:\n{5}", o.Edge, o.Source, o.Id, o.Target, o.Tid, r.results.Select(e => e.count));
+                        Info("Count {0} edges from source {1} vertex with id {2} to target {3} vertex with id {4}:\n{5}", o.Edge, o.Source, o.Id, o.Target, o.Tid, r.results.Where(e => e.count.Value > 0).Select(e => (e.e_type, e.from_id, e.from_type, e.count)));
                     }
                     else throw new InvalidOperationException("Unsupported CLI options combination.");
                 }

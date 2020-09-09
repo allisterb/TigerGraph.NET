@@ -90,7 +90,7 @@ namespace TigerGraph.CLI
         public bool Count { get; set; }
     }
 
-    [Verb("edges", HelpText = "Get the edges of the specified graph by specifying the source vertices and optionally the edge type and target vertices.")]
+    [Verb("edges", HelpText = "Get the edges of the specified graph by specifying the source vertex and optionally the edge type and target vertices.")]
     public class EdgesOptions : ApiOptions
     {
         [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph. Defaults to 'MyGraph'.")]
@@ -99,7 +99,7 @@ namespace TigerGraph.CLI
         [Option('v', "vertex", Required = true, HelpText = "The source vertex type.")]
         public string Source { get; set; }
 
-        [Option("id", Required = true, HelpText = "An optional source vertex id.")]
+        [Option("id", Required = true, HelpText = "The source vertex id.")]
         public string Id { get; set; }
         
         [Option('e', "edge", Required = false, HelpText = "An optional edge type to retrieve the edge data for.")]
