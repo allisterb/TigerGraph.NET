@@ -7,7 +7,18 @@
     <FileVersion>0.1.0.0</FileVersion>
     <Product>TigerGraph.NET</Product>
     <Authors>Allister Beharry</Authors>
-    <Version>0.2.0</Version>
+    <Version>0.1.0-alpha</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>tg-icon.png</PackageIcon>
+    <PackageIconUrl />
+    <PackageId>TigerGraph.Lib</PackageId>
+    <Description>A .NET client library for TigerGraph</Description>
+    <PackageProjectUrl>https://github.com/allisterb/TigerGraph.NET</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/allisterb/TigerGraph.NET.git</RepositoryUrl>
+    <PackageTags>tigergraph graph</PackageTags>
+    <Copyright>Copyright (c) 2020 Allister Beharry</Copyright>
+    <PackageReleaseNotes>First public pre-release, supports most TigerGraph query endpoints.</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Framework)' == 'NET461' ">
     <DefineConstants>NET461</DefineConstants>
@@ -17,7 +28,6 @@
   </PropertyGroup>
   <Import Project="..\TigerGraph.Shared\TigerGraph.Shared.projitems" Label="Shared" />
   <ItemGroup>
-    <PackageReference Include="Humanizer.Core" Version="2.7.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.0">
@@ -30,5 +40,15 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageReference Include="SerilogTimings" Version="2.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\docs\tg-icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>
