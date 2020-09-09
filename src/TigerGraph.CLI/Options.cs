@@ -128,13 +128,13 @@ namespace TigerGraph.CLI
         public string File { get; set; }
     }
 
-    [Verb("exec", HelpText = "Execute a GSQL query on the specified graph using the specified parameters.")]
+    [Verb("query", HelpText = "Execute a GSQL query on the specified graph using the specified parameters.")]
     public class QueryOptions : ApiOptions
     {
-        [Option('t', "text", Required = false, HelpText = "The text of the query to run.")]
+        [Option('s', "source", Required = false, HelpText = "The GSQL query to run.")]
         public string Text { get; set; }
 
-        [Option('f', "file", Required = false, HelpText = "A file containing the text of the query to run.")]
+        [Option('f', "file", Required = false, HelpText = "A file containing the GSQL query to run.")]
         public string File { get; set; }
 
         [Option('p', "params", Required = false, HelpText = "A comma-delimited list of query parameters in the form p1=v1,p2=v2,...")]

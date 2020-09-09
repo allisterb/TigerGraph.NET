@@ -37,7 +37,7 @@ namespace TigerGraph
             if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(pass))
             {
                 GsqlClient.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator(User, Pass);
-                Info("Initialized GSQL client authentication using specified name nd password.");
+                Info("Initialized GSQL client authentication using specified name and password.");
             }
             Initialized = true;
         }
