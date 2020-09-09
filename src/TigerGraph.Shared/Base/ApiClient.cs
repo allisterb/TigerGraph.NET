@@ -133,9 +133,10 @@ namespace TigerGraph.Base
             }
         }
 
-        public async Task<EdgesResult> Edges(string graphName, string sourceVertexType, string sourceVertexId, string targetVertexType = "", string targetVertexId = "", string edgeType = "")
+        public async Task<EdgesResult> Edges(string graphName, string sourceVertexType, string sourceVertexId, string targetVertexType = "", string targetVertexId = "", string edgeType = "", bool count = false)
         {
             FailIfNotInitialized();
+            
             if (string.IsNullOrEmpty(targetVertexType) && string.IsNullOrEmpty(targetVertexId) && string.IsNullOrEmpty(edgeType))
             {
                 using (var op = Begin("Get all edges for source {0} vertex with id {1} for graph {2} from server {3}", sourceVertexType, sourceVertexId, graphName, RestServerUrl))
@@ -143,6 +144,7 @@ namespace TigerGraph.Base
                     var query = "graph/" + graphName + "/edges/"
                         + (sourceVertexType ?? throw new ArgumentException("The source vertex type parameter cannot be null."))
                         + "/" + (sourceVertexId ?? throw new ArgumentException("The source vertex id parameter cannot be null."));
+                    if (count) query += "?count_only=true";
                     var response = await RestHttpGetAsync<EdgesResult>(query);
                     op.Complete();
                     return response;
@@ -158,6 +160,7 @@ namespace TigerGraph.Base
                         + "/_"
                         + "/" + (targetVertexType ?? throw new ArgumentException("The target vertex type parameter cannot be null."))
                         + "/" + (targetVertexId ?? throw new ArgumentException("The target vertex id parameter cannot be null."));
+                    if (count) query += "?count_only=true";
                     var response = await RestHttpGetAsync<EdgesResult>(query);
                     op.Complete();
                     return response;
@@ -173,6 +176,7 @@ namespace TigerGraph.Base
                         + "/" + (edgeType ?? throw new ArgumentException("The edge type parameter cannot be null."))
                         + "/" + (targetVertexType ?? throw new ArgumentException("The target vertex type parameter cannot be null."))
                         + "/" + (targetVertexId ?? throw new ArgumentException("The target vertex id parameter cannot be null."));
+                    if (count) query += "?count_only=true";
                     var response = await RestHttpGetAsync<EdgesResult>(query);
                     op.Complete();
                     return response;
@@ -187,6 +191,7 @@ namespace TigerGraph.Base
                         + "/" + (sourceVertexType ?? throw new ArgumentException("The source vertex type parameter cannot be null."))
                         + "/" + (sourceVertexId ?? throw new ArgumentException("The source vertex id parameter cannot be null."))
                         + "/" + (edgeType ?? throw new ArgumentException("The edge type parameter cannot be null."));
+                    if (count) query += "?count_only=true";
                     var response = await RestHttpGetAsync<EdgesResult>(query);
                     op.Complete();
                     return response;
