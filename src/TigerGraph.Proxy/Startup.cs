@@ -35,7 +35,7 @@ namespace TigerGraph.Proxy
             services.AddRouting();
             services.AddProxies();
             services.AddControllers();
-            services.AddHttpClient("TigerGraphClient", c => c.BaseAddress = new Uri(Environment.GetEnvironmentVariable("TG_SERVER_URL")));
+            services.AddHttpClient("TigerGraphClient");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
