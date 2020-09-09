@@ -100,11 +100,12 @@ namespace TigerGraph.CLI
             .WithNotParsed((IEnumerable<Error> errors) =>
             {
                 HelpText help = GetAutoBuiltHelpText(result);
-                help.Heading = new HeadingInfo("TigerGraph.NET", ApiClient.AssemblyVersion.ToString());
-                help.Copyright = new CopyrightInfo("Allister Beharry", new int[] { 2020 });
-                help.AddPreOptionsLine(string.Empty);
+                help.Copyright = "";
                 if (errors.Any(e => e.Tag == ErrorType.VersionRequestedError))
                 {
+                    help.Heading = new HeadingInfo("TigerGraph.NET", ApiClient.AssemblyVersion.ToString(3));
+                    help.Copyright = new CopyrightInfo("Allister Beharry", new int[] { 2020 });
+                    Info(help);
                     Exit(ExitResult.SUCCESS);
                 }
                 else if (errors.Any(e => e.Tag == ErrorType.HelpVerbRequestedError))
@@ -336,7 +337,7 @@ namespace TigerGraph.CLI
             Dictionary<string, object> parsed_params = new Dictionary<string, object>();
             if (string.IsNullOrEmpty(o.Source) && string.IsNullOrEmpty(o.File))
             {
-                Error("You must specify either the text of the query using {0} or the file containing the query source using {1}.", "-t", "-f");
+                Error("You must specify either the source of the query using {0} or the file containing the query source using {1}.", "-s", "-f");
                 return ExitResult.INVALID_OPTIONS;
 
             }
@@ -377,7 +378,7 @@ namespace TigerGraph.CLI
                     parsed_params = parsed_params.Where(p => p.Key != "_ERROR_").ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 }
             }
-            using (var op = Begin("Executing query {0} on server {1}.", source, GetGsqlServerUrl(o)))
+            using (var op = Begin("Executing query {0} on server {1}", source, GetGsqlServerUrl(o)))
             {
                 var r = await ApiClient.Query(source, parsed_params);
                 op.Complete();

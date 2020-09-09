@@ -10,20 +10,15 @@ namespace TigerGraph.Models
 {
     public class TupleConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(Dictionary<string, object>) == objectType;
-        }
-
+        public override bool CanConvert(Type objectType) => typeof(Dictionary<string, object>) == objectType;
+        
         public override object ReadJson(
             JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
-                return null;
-
+            if (reader.TokenType == JsonToken.Null) return null;
             var results = new Dictionary<string, object>();
             foreach (var a in JArray.Load(reader))
             {
