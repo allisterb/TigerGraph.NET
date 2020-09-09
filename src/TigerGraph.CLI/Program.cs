@@ -119,7 +119,7 @@ namespace TigerGraph.CLI
                     {
                         help.AddVerbs(OptionTypes);
                     }
-                    Info(help);
+                    Info(help.ToString().Replace("--", ""));
                     Exit(ExitResult.SUCCESS);
                 }
                 else if (errors.Any(e => e.Tag == ErrorType.HelpRequestedError))

@@ -14,6 +14,7 @@ namespace TigerGraph.Proxy
 {
     public class Program
     {
+        #region Entry-point
         public static void Main(string[] args)
         {
             var config = new LoggerConfiguration();
@@ -57,7 +58,19 @@ namespace TigerGraph.Proxy
                 pingTimer.Dispose();
             }
         }
+        #endregion
 
+        #region Properties
+        public static string TG_USER = Environment.GetEnvironmentVariable("TG_USER");
+
+        public static string TG_PASS = Environment.GetEnvironmentVariable("TG_PASS");
+
+        public static string TG_TOKEN = Environment.GetEnvironmentVariable("TG_TOKEN");
+
+        public static string TG_REST_SERVER_URL = Environment.GetEnvironmentVariable("TG_REST_SERVER_URL");
+
+        public static string TG_GSQL_SERVER_URL = Environment.GetEnvironmentVariable("TG_GSQL_SERVER_URL");
+        #endregion
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
