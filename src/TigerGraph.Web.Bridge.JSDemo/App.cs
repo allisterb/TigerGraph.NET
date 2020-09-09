@@ -1,4 +1,6 @@
 ﻿using Bridge;
+using Bridge.Html5;
+using Bridge.jQuery2;
 using Newtonsoft.Json;
 using System;
 
@@ -8,20 +10,29 @@ namespace TigerGraph.Web.Bridge.JSDemo
     {
         public static void Main()
         {
-            // Write a message to the Console
-            Console.WriteLine("Welcome to Bridge.NET");
 
-            // After building (Ctrl + Shift + B) this project, 
-            // browse to the /bin/Debug or /bin/Release folder.
+            var config = new AjaxOptions()
+            {
+                Url = "https://localhost:5001/p/echo",
+                // Set the contentType of the request
+                ContentType = "application/json; charset=utf-8",
+                // On response, call custom success method
+                Success = (data, textStatus, jqXHR) =>
+                {
+                    // Output the whole response object.
+                    Console.WriteLine(data);
 
-            // A new bridge/ folder has been created and
-            // contains your projects JavaScript files. 
+                    // or, output just the message using
+                    // the "d" property string indexer.
+                    // Console.WriteLine(data["d"]);
+                }
+            };
 
-            // Open the bridge/index.html file in a browser by
-            // Right-Click > Open With..., then choose a
-            // web browser from the list
+            // Make the Ajax request
+            jQuery.Ajax(config);
 
-            // This application will then run in the browser.
         }
+
+
     }
 }

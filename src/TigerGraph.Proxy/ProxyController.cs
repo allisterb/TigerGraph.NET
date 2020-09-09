@@ -50,10 +50,7 @@ namespace TigerGraph.Proxy
         })
         .WithAfterReceive((c, hrm) =>
         {
-            hrm.Headers.Add("Access-Control-Allow-Origin", "*");
-            hrm.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-            hrm.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
-            log.LogInformation("Proxy succeeded and Access-Control-* headers added to response.");
+            log.LogInformation("Proxy to {0} succeeded.", c.Request.Query);
             return Task.CompletedTask;
         })
         .WithHandleFailure((c, e) =>

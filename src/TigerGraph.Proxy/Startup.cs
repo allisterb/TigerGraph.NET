@@ -16,10 +16,22 @@ namespace TigerGraph.Proxy
 {
     public class Startup
     {
+        readonly string AllowAnyPolicy = "AllowAnyPolicy";
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowAnyPolicy,
+                                  builder =>
+                                  {
+                                      builder
+                                        .AllowAnyOrigin()
+                                        .AllowAnyMethod()
+                                        .AllowAnyHeader();
+                                  });
+            });
             services.AddRouting();
             services.AddProxies();
             services.AddControllers();
@@ -33,8 +45,8 @@ namespace TigerGraph.Proxy
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseRouting();
+            app.UseCors(AllowAnyPolicy);
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
