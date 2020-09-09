@@ -16,7 +16,7 @@ namespace TigerGraph.Models
 
     public class Endpoint
     {
-        public List<EndPointParameter> parameters { get; set; }
+        public Dictionary<string, EndPointParameter> parameters { get; set; }
     }
 
 }

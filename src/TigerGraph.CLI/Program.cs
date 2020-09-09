@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Threading;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -16,6 +12,7 @@ using CommandLine;
 using CommandLine.Text;
 
 using TigerGraph.Models;
+
 namespace TigerGraph.CLI
 {
     #region Enums
@@ -32,6 +29,7 @@ namespace TigerGraph.CLI
     #endregion
     class Program : Base.Runtime
     {
+        #region Constructor
         static Program()
         {
             foreach (var t in OptionTypes)
@@ -39,6 +37,7 @@ namespace TigerGraph.CLI
                 OptionTypesMap.Add(t.Name, t);
             }
         }
+        #endregion
 
         #region Entry point
         static void Main(string[] args)
@@ -50,6 +49,7 @@ namespace TigerGraph.CLI
             }
             else
             {
+                AppDomain.CurrentDomain.UnhandledException += Program_UnhandledException;   
                 SetLogger(new SerilogLogger(console: true, debug: false));
             }
             PrintLogo();
@@ -175,7 +175,11 @@ namespace TigerGraph.CLI
         static async Task<ExitResult> Endpoints(EndpointsOptions o)
         {
             var r = await ApiClient.Endpoints();
-            Info("Received {0} endpoints from {1}: {2}", r.Count, o.RestServerUrl, r.Keys);
+            Info("Received {0} endpoints from {1}:", r.Count, GetRestServerUrl(o));
+            foreach(var e in r)
+            {
+                WriteInfo("{0}", e.Key);
+            }
             return ExitResult.SUCCESS;
         }
 
@@ -528,10 +532,9 @@ namespace TigerGraph.CLI
         #endregion
 
         #region Event Handlers
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void Program_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-
-            Error((Exception)e.ExceptionObject, "Unhandled error occurred during operation. SMApp CLI will now shutdown.");
+            Error((Exception)e.ExceptionObject, "Unhandled runtime error occurred. TigerGraph.NET CLI will now shutdown.");
             Exit(ExitResult.UNHANDLED_EXCEPTION);
         }
 
