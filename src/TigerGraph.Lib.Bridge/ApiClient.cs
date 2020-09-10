@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TigerGraph.Bridge
 {
-    public class ApiClient
+    public class ApiClient : Base.ApiClient
     {
     }
 }

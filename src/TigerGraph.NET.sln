@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{9A0B
 	ProjectSection(SolutionItems) = preProject
 		..\build = ..\build
 		..\scripts\endpoints.cmd = ..\scripts\endpoints.cmd
+		..\deploy\oc-deploy-tgproxy-build.cmd = ..\deploy\oc-deploy-tgproxy-build.cmd
 		..\scripts\schema.cmd = ..\scripts\schema.cmd
 		..\tg = ..\tg
 		..\tg-proxy = ..\tg-proxy

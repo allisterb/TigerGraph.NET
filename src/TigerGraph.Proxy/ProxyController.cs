@@ -58,9 +58,9 @@ namespace TigerGraph.Proxy
                 })
                 .WithAfterReceive(async (context, hrm) =>
                 {
-                    var options = new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10) };
+                    var options = new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) };
                     cache.Cache.Set(rest, await hrm.Content.ReadAsStringAsync(), options);
-                    log.LogInformation("Proxy to {0} succeeded. Added path {1} to cache with expiration at {2}.", context.Request.Query, rest, DateTime.Now.AddMinutes(10));
+                    log.LogInformation("Proxy to {0} succeeded. Added path {1} to cache with expiration at {2}.", context.Request.Path, rest, DateTime.Now.AddMinutes(10));
                 })
                 .WithHandleFailure((c, e) =>
                 {

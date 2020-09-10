@@ -50,16 +50,16 @@ namespace TigerGraph.CLI
                                     EventData.AddVertex("UserLogon", logonGuid).AddVertexAttributes("UserLogon", logonGuid, UpsertOp.ignore_if_exists, ("Id", logonId), ("Name", userName));
                                 }
                                 var processGuid = ((Guid)record.Properties[2].Value).ToString();
-                                var processId = ((int)record.Properties[3].Value).ToString();
-                                var processImage = ((string)record.Properties[4].Value).ToString();
-                                var commandLine = ((Guid)record.Properties[10].Value).ToString();
-                                var currentDirectory = ((Guid)record.Properties[11].Value).ToString();
-                                var terminalSessionId = ((int)record.Properties[15].Value).ToString();
-                                if (!EventData.vertices["Process"].ContainsKey(processGuid))
-                                {
-                                    EventData.AddVertex("UserProcess", processGuid).AddVertexAttributes("Process", processGuid, 
-                                        UpsertOp.ignore_if_exists, ("Id", processId), ("Image", processImage), ("CommandLine", commandLine), ("CurrentDirectory", currentDirectory));
-                                }
+                                //var processId = ((int)record.Properties[3].Value).ToString();
+                                //var processImage = ((string)record.Properties[4].Value).ToString();
+                                //var commandLine = ((Guid)record.Properties[10].Value).ToString();
+                                //var currentDirectory = ((Guid)record.Properties[11].Value).ToString();
+                                //var terminalSessionId = ((int)record.Properties[15].Value).ToString();
+                                //if (!EventData.vertices["Process"].ContainsKey(processGuid))
+                                //{
+                                //    EventData.AddVertex("UserProcess", processGuid).AddVertexAttributes("Process", processGuid, 
+                                //        UpsertOp.ignore_if_exists, ("Id", processId), ("Image", processImage), ("CommandLine", commandLine), ("CurrentDirectory", currentDirectory));
+                                //}
                                 break;
                             case 3:
                                 Debug("Reading {0} event properties {1}.", "Connection", record.Properties.Select((p, i) => i.ToString() + ":" + p.Value));

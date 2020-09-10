@@ -1,16 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Text;
 using System.Net;
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 using Serilog;
+
 namespace TigerGraph.Proxy
 {
     public class Program
@@ -20,7 +16,7 @@ namespace TigerGraph.Proxy
         {
             /* Configure the Serilog Logger */
             var config = new LoggerConfiguration();
-            Log.Logger = config.MinimumLevel.Debug().Enrich.FromLogContext().WriteTo.Console().CreateLogger();
+            Log.Logger = config.MinimumLevel.Information().Enrich.FromLogContext().WriteTo.Console().CreateLogger();
            
             /* Check for required environment vars */
             if (string.IsNullOrEmpty(TG_TOKEN))
