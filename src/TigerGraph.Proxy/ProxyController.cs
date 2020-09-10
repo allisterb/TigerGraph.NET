@@ -35,7 +35,11 @@ namespace TigerGraph.Proxy
                 .WithHttpClientName("TigerGraphClient")
                 .WithIntercept(async context =>
                 {
-                    if (cache.Cache.TryGetValue(rest, out string json))
+                    if (string.IsNullOrEmpty(rest))
+                    {
+                        return true;
+                    }
+                    else if (cache.Cache.TryGetValue(rest, out string json))
                     {
                         await context.Content(json, "application/json");
                         log.LogInformation("Cache hit for path {0}.", rest);
@@ -54,9 +58,9 @@ namespace TigerGraph.Proxy
                 })
                 .WithAfterReceive(async (context, hrm) =>
                 {
-                    var options = new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) };
+                    var options = new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10) };
                     cache.Cache.Set(rest, await hrm.Content.ReadAsStringAsync(), options);
-                    log.LogInformation("Proxy to {0} succeeded. Added path {1} to cache.", context.Request.Query, rest);
+                    log.LogInformation("Proxy to {0} succeeded. Added path {1} to cache with expiration at {2}.", context.Request.Query, rest, DateTime.Now.AddMinutes(10));
                 })
                 .WithHandleFailure((c, e) =>
                 {
