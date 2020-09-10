@@ -28,37 +28,49 @@ namespace TigerGraph.Proxy
         [Route("p/{**rest}")]
         public Task RestServerProxy(string rest)
         {
-            log.LogInformation("Proxying request {0} to {1}...", rest, $"{Program.TG_REST_SERVER_URL}{rest}");
-            return this.HttpProxyAsync($"{Program.TG_REST_SERVER_URL}/{rest}", _restServerHttpOptions);
+            log.LogInformation("Proxying request {0} to {1}...", rest, $"{Program.TG_REST_SERVER_URL}/{rest}");
+            return this.HttpProxyAsync($"{Program.TG_REST_SERVER_URL}/{rest}",
+                HttpProxyOptionsBuilder.Instance
+                .WithShouldAddForwardedHeaders(false)
+                .WithHttpClientName("TigerGraphClient")
+                .WithIntercept(async context =>
+                {
+                    if (cache.Cache.TryGetValue(rest, out string json))
+                    {
+                        await context.Content(json, "application/json");
+                        log.LogInformation("Cache hit for path {0}.", rest);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    
+                })
+                .WithBeforeSend((c, hrm) =>
+                {
+                    hrm.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Program.TG_TOKEN);
+                    return Task.CompletedTask;
+                })
+                .WithAfterReceive(async (context, hrm) =>
+                {
+                    var options = new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) };
+                    cache.Cache.Set(rest, await hrm.Content.ReadAsStringAsync(), options);
+                    log.LogInformation("Proxy to {0} succeeded. Added path {1} to cache.", context.Request.Query, rest);
+                })
+                .WithHandleFailure((c, e) =>
+                {
+                    log.LogError(e, "Proxy to {0} error.", c.Request.Query);
+                    return Task.CompletedTask;
+                })
+                .Build()
+            );
         }
         #endregion
 
         #region Fields
         private static ILogger<ProxyController> log;
         private TigerGraphCache cache;
-        private HttpProxyOptions _restServerHttpOptions = HttpProxyOptionsBuilder.Instance
-        .WithShouldAddForwardedHeaders(false)
-        .WithHttpClientName("TigerGraphClient")
-        .WithIntercept(async context =>
-        {
-            await context.Content("foo");
-            return false;
-        })
-        .WithBeforeSend((c, hrm) =>
-        {
-            hrm.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Program.TG_TOKEN);
-            return Task.CompletedTask;
-        })
-        .WithAfterReceive((c, hrm) =>
-        {
-            log.LogInformation("Proxy to {0} succeeded.", c.Request.Query);
-            return Task.CompletedTask;
-        })
-        .WithHandleFailure((c, e) =>
-        {
-            log.LogError(e, "Proxy to {0} error.", c.Request.Query);
-            return Task.CompletedTask;
-        }).Build();
         #endregion
     }
 
