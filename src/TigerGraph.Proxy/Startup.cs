@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Mvc;
 
 using AspNetCore.Proxy;
@@ -24,18 +25,18 @@ namespace TigerGraph.Proxy
             services.AddCors(options =>
             {
                 options.AddPolicy(name: AllowAnyPolicy,
-                                  builder =>
-                                  {
-                                      builder
-                                        .AllowAnyOrigin()
-                                        .AllowAnyMethod()
-                                        .AllowAnyHeader();
-                                  });
+                    builder => {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    });
             });
             services.AddRouting();
             services.AddProxies();
             services.AddControllers();
             services.AddHttpClient("TigerGraphClient");
+            services.AddSingleton<TigerGraphCache>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,5 +51,16 @@ namespace TigerGraph.Proxy
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
+    }
+
+    public class TigerGraphCache
+    {
+        public MemoryCache Cache { get; set; }
+        public TigerGraphCache()
+        {
+            Cache = new MemoryCache(new MemoryCacheOptions {
+              
+            });
+        }
     }
 }

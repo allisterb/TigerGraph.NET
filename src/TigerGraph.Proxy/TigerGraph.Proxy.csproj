@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.Proxy" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.8" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
   </ItemGroup>
 

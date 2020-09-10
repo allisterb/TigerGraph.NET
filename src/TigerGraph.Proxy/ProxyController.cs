@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Net.Http;
-
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 using AspNetCore.Proxy;
 using AspNetCore.Proxy.Options;
@@ -17,11 +17,11 @@ namespace TigerGraph.Proxy
     public class ProxyController : ControllerBase
     {
         #region Constructors
-        public ProxyController(ILogger<ProxyController> logger)
+        public ProxyController(ILogger<ProxyController> logger, TigerGraphCache c)
         {
             log = logger;
+            cache = c;
         }
-
         #endregion
 
         #region Actions
@@ -35,13 +35,14 @@ namespace TigerGraph.Proxy
 
         #region Fields
         private static ILogger<ProxyController> log;
-
+        private TigerGraphCache cache;
         private HttpProxyOptions _restServerHttpOptions = HttpProxyOptionsBuilder.Instance
         .WithShouldAddForwardedHeaders(false)
         .WithHttpClientName("TigerGraphClient")
-        .WithIntercept(context =>
+        .WithIntercept(async context =>
         {
-            return new ValueTask<bool>(false);
+            await context.Content("foo");
+            return false;
         })
         .WithBeforeSend((c, hrm) =>
         {
