@@ -14,3 +14,6 @@ You'll need the .NET Core 3.1 SDK [from](https://dotnet.microsoft.com/download) 
 * Run `tg-proxy http://localhost:5001/` to start the server on port 5001. Press Ctrl-C to stop the server.
 
 You can then run something like `curl -i --location --request GET "http://localhost:5001/p/echo"` and the server with return the JSON data from the TG server at `TG_REST_SERVER_URL`. It will also make `echo` calls to the TG server every 15mins.
+
+# Deploy
+There are scripts in the `deploy` folder of the root TG.NET directory for deploying the proxy server to a OpenShift cluster.
