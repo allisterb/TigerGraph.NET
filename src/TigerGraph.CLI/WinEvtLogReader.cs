@@ -50,25 +50,26 @@ namespace TigerGraph.CLI
                                     EventData.AddVertex("UserLogon", logonGuid).AddVertexAttributes("UserLogon", logonGuid, UpsertOp.ignore_if_exists, ("Id", logonId), ("Name", userName));
                                 }
                                 var processGuid = ((Guid)record.Properties[2].Value).ToString();
-                                //var processId = ((int)record.Properties[3].Value).ToString();
-                                //var processImage = ((string)record.Properties[4].Value).ToString();
-                                //var commandLine = ((Guid)record.Properties[10].Value).ToString();
-                                //var currentDirectory = ((Guid)record.Properties[11].Value).ToString();
-                                //var terminalSessionId = ((int)record.Properties[15].Value).ToString();
-                                //if (!EventData.vertices["Process"].ContainsKey(processGuid))
-                                //{
-                                //    EventData.AddVertex("UserProcess", processGuid).AddVertexAttributes("Process", processGuid, 
-                                //        UpsertOp.ignore_if_exists, ("Id", processId), ("Image", processImage), ("CommandLine", commandLine), ("CurrentDirectory", currentDirectory));
-                                //}
+                                var processId = (uint) record.Properties[3].Value;
+                                var processImage = ((string)record.Properties[4].Value).ToString();
+                                var commandLine = ((string)record.Properties[10].Value).ToString();
+                                var currentDirectory = ((string)record.Properties[11].Value).ToString();
+                                var terminalSessionId = ((uint)record.Properties[15].Value).ToString();
+                                if (!EventData.vertices["Process"].ContainsKey(processGuid))
+                                {
+                                    EventData.AddVertex("Process", processGuid).AddVertexAttributes("Process", processGuid, 
+                                        UpsertOp.ignore_if_exists, ("Id", processId), ("Image", processImage), ("CommandLine", commandLine), ("CurrentDirectory", currentDirectory));
+                                }
                                 break;
                             case 3:
-                                Debug("Reading {0} event properties {1}.", "Connection", record.Properties.Select((p, i) => i.ToString() + ":" + p.Value));
+                                //Debug("Reading {0} event properties {1}.", "Connection", record.Properties.Select((p, i) => i.ToString() + ":" + p.Value));
                                 break;
                             default:
                                 continue;
                         }
                         bookmark = record.Bookmark;
                     }
+                    Info("Read {0} process create events.", EventData.vertices["Process"].Count);
                 }
             }
         }

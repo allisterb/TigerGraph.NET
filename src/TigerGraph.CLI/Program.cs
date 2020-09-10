@@ -355,7 +355,6 @@ namespace TigerGraph.CLI
                 Info("Using SysMon event log file at {0}.", path);
                 Info("Reading SysMon event log. Press any key to exit.");
                 winevt.ReadSysMonLog();
-                Info("Read {0} and {1} vertices and edges from SysMon event log.", EventData.vertices.Count(), EventData.edges.Count());
                 return ExitResult.SUCCESS;
             }
         }
