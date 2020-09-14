@@ -7,6 +7,7 @@
     <FileVersion>0.1.1.0</FileVersion>
     <Product>TigerGraph.NET</Product>
     <Authors>Allister Beharry</Authors>
+    <Owners>allisterb</Owners>
     <Version>0.1.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIcon>tg-icon.png</PackageIcon>

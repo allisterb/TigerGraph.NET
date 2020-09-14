@@ -30,6 +30,8 @@ namespace TigerGraph.Base
 
         public abstract Task<T2> GsqlHttpPostAsync<T1, T2>(string query, T1 data);
 
+        public abstract Task<string> GsqlHttpPostStringAsync(string query, string data);
+
         public abstract Task<T> GsqlHttpPostStringAsync<T>(string query, string data);
         #endregion
 
@@ -39,7 +41,7 @@ namespace TigerGraph.Base
         public Uri RestServerUrl { get; set; }
 
         public Uri GsqlServerUrl { get; set; }
-        
+
         public string User { get; set; }
 
         public string Pass { get; set; }
@@ -228,10 +230,18 @@ namespace TigerGraph.Base
             {
                 _p += p.Key + "=" + p.Value.ToString() + "&";
             }
-            _p = _p.TrimEnd('&');            
-            var query = "gsqlserver/interpreted_query" + (parameters.Count > 0 ? "?" + _p : "");
-            var response = await GsqlHttpPostStringAsync<QueryResult>(query, text);
-            return response;
+            _p = _p.TrimEnd('&');
+
+            var response = await GsqlHttpPostStringAsync("/login", Convert.ToBase64String(Encoding.ASCII.GetBytes("tigergraph:T00k3nBack")));
+            //var query = "gsqlserver/interpreted_query" + (parameters.Count > 0 ? "?" + _p : "");
+            //var response = await GsqlHttpPostStringAsync<QueryResult>(query, text);
+            return null; // response;
+        }
+
+        public async Task<BuiltinResponse> Builtin(string graphName, string fn, string t)
+        {
+            var data = new BuiltinRequest() { function = fn, type = t };
+            return await RestHttpPostAsync<BuiltinRequest, BuiltinResponse>(graphName, data);
         }
         #endregion
     }

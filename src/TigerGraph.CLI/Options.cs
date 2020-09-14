@@ -146,4 +146,17 @@ namespace TigerGraph.CLI
         [Option('p', "params", Required = false, HelpText = "A comma-delimited list of query parameters in the form p1=v1,p2=v2,...")]
         public string Parameters { get; set; }
     }
+
+    [Verb("builtin", HelpText = "Execute a builtin function on the specified graph.")]
+    public class BuiltinOptions : ApiOptions
+    {
+        [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph.")]
+        public string Graph { get; set; }
+
+        [Option('f', "func", Required = false, HelpText = "The name of the builtin function to execute.")]
+        public string Fn { get; set; }
+
+        [Option('t', "function", Required = false, HelpText = "The vertex or edge type to execute the function against.")]
+        public string FnType { get; set; }
+    }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -34,7 +35,35 @@ namespace TigerGraph
             if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(pass))
             {
                 GsqlClient.Authenticator = new RestSharp.Authenticators.HttpBasicAuthenticator(User, Pass);
-                Info("Initialized GSQL client authentication using specified name and password.");
+            }
+            using (var op = Begin("Loggig in as remote GSQL client"))
+            {
+                var loginRequest = new RestRequest("login", Method.POST, DataFormat.None);
+                loginRequest.AddParameter("username", user);
+                loginRequest.AddParameter("password", pass);
+                var cookie = new Dictionary<string, object>();
+                cookie.Add("clientPath", AssemblyDirectory.FullName);
+                cookie.Add("fromGsqlClient", true);
+                cookie.Add("gShellTest", true);
+                cookie.Add("terminalWidth", 110);
+                cookie.Add("clientCommit", "a9f902e5c552780589a15ba458adb48984359165"); //from https://github.com/tigergraph/ecosys/blob/c58b82e1be249eca6b023a63caaabe8a0c029af6/tools/clients/src/main/java/com/tigergraph/v3_0_5/client/Client.java#L831
+                loginRequest.AddHeader("Cookie", JsonConvert.SerializeObject(cookie));
+                loginRequest.AddHeader("Content-Language", "en-US");
+                GsqlClient.CookieContainer = new CookieContainer();
+                Debug("HTTP POST to {0} with parameters {1}", GsqlServerUrl.ToString() + "/login", loginRequest.Parameters);
+                IRestResponse response = GsqlClient.ExecuteAsync(loginRequest).Result;
+                Debug("JSON response: {0} {1} {2}", response.Headers, response.Content, response.Cookies);
+                if (response.ErrorException != null)
+                {
+                    op.Cancel();
+                    Error(response.ErrorException, "Could not login as a remote GSQL client with username {0}. Some functions will not be available.", user);
+                }
+                else
+                {
+                    op.Complete();
+                    GsqlAuthCookie = response.Cookies[0].HttpCookie;
+                    Info("Initialized GSQL remote client authentication using specified name and password.");
+                }
             }
             Initialized = true;
         }
@@ -115,7 +144,7 @@ namespace TigerGraph
             }
         }
 
-        public override async Task<T> GsqlHttpPostStringAsync<T>(string query, string data)
+        public override async Task<string> GsqlHttpPostStringAsync(string query, string data)
         {
             var request = new RestRequest(query, Method.POST, DataFormat.None);
             request.AddParameter("text/plain", data, ParameterType.RequestBody);
@@ -127,10 +156,11 @@ namespace TigerGraph
             }
             else
             {
-                Debug("JSON response: {0}", response.Content);
-                return JsonConvert.DeserializeObject<T>(response.Content);
+                return response.Content;
             }
         }
+
+        public override async Task<T> GsqlHttpPostStringAsync<T>(string query, string data) => JsonConvert.DeserializeObject<T>(await GsqlHttpPostStringAsync(query, data)); 
         #endregion
 
         #region Properties
@@ -147,6 +177,10 @@ namespace TigerGraph
         public RestClient RestClient { get; set; }
 
         public RestClient GsqlClient { get; set; }
+        
+        public RestClient GsqlInternalClient { get; set; }
+        
+        public HttpCookie GsqlAuthCookie { get; set; }
         #endregion
 
         #region Methods
@@ -158,6 +192,8 @@ namespace TigerGraph
             }
             else return uri;
         }
+
+
         #endregion
     }
 

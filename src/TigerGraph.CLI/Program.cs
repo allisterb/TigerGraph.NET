@@ -61,6 +61,11 @@ namespace TigerGraph.CLI
             result.WithParsed<ApiOptions>(o =>
             {
                 ApiClient = new ApiClient(GetToken(o), GetRestServerUrl(o), GetGsqlServerUrl(o), GetUser(o), GetPass(o));
+                if (!ApiClient.Initialized)
+                {
+                    Error("The API client did not initialize.");
+                    Exit(ExitResult.INVALID_OPTIONS);
+                }
             })
             .WithParsed<PingOptions>(o =>
             {
@@ -95,6 +100,10 @@ namespace TigerGraph.CLI
             .WithParsed<QueryOptions>(o =>
             {
                 Exit(Query(o).Result);
+            })
+            .WithParsed<BuiltinOptions>(o =>
+            {
+                Exit(Builtin(o).Result);
             })
             #region Print options help
             .WithNotParsed((IEnumerable<Error> errors) =>
@@ -448,6 +457,25 @@ namespace TigerGraph.CLI
                 else
                 {
                     Error("The query returned an error: {0}", r.message);
+                    return ExitResult.ERROR_IN_RESULTS;
+                }
+            }
+        }
+
+        static async Task<ExitResult> Builtin(BuiltinOptions o)
+        {
+            using (var op = Begin("Executing builtin {0} on object {1} of graph {2} on server {3}", o.Fn, o.FnType, o.Graph, GetRestServerUrl(o)))
+            {
+                var r = await ApiClient.Builtin(o.Graph, o.Fn, o.FnType);
+                op.Complete();
+                if (!r.error)
+                {
+                    Info("Builtin function {0} result: {1}.", o.Fn, r.results.Select(re => re.attributes));
+                    return ExitResult.SUCCESS;
+                }
+                else
+                {
+                    Error("The function returned an error: {0}", r.message);
                     return ExitResult.ERROR_IN_RESULTS;
                 }
             }
