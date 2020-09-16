@@ -134,7 +134,7 @@ namespace TigerGraph.CLI
         public string File { get; set; }
     }
 
-    [Verb("query", HelpText = "Execute a GSQL query on the specified graph using the specified parameters.")]
+    [Verb("query", HelpText = "Run a GSQL interpreted query on the specified graph using the specified parameters.")]
     public class QueryOptions : ApiOptions
     {
         [Option('s', "source", Required = false, HelpText = "The GSQL query to run.")]
@@ -147,16 +147,27 @@ namespace TigerGraph.CLI
         public string Parameters { get; set; }
     }
 
+    [Verb("exec", HelpText = "Execute a GSQL command on the specified graph using the specified parameters.")]
+    public class ExecOptions : ApiOptions
+    {
+        [Option('s', "source", Required = false, HelpText = "The GSQL command to run.")]
+        public string Source { get; set; }
+
+        [Option('f', "file", Required = false, HelpText = "A file containing the GSQL command to run.")]
+        public string File { get; set; }
+
+    }
+
     [Verb("builtin", HelpText = "Execute a builtin function on the specified graph.")]
     public class BuiltinOptions : ApiOptions
     {
         [Option('g', "graph", Required = false, Default = "MyGraph", HelpText = "The name of the graph.")]
         public string Graph { get; set; }
 
-        [Option('f', "func", Required = false, HelpText = "The name of the builtin function to execute.")]
+        [Option('f', "func", Required = true, HelpText = "The name of the builtin function to execute.")]
         public string Fn { get; set; }
 
-        [Option('t', "function", Required = false, HelpText = "The vertex or edge type to execute the function against.")]
+        [Option('t', "function", Required = false, Default = "", HelpText = "The vertex or edge type to execute the function against.")]
         public string FnType { get; set; }
     }
 }

@@ -20,7 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Echo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Edges.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Endpoint.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\GsqlAdmin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Command.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Query.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Schema.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Upsert.cs" />

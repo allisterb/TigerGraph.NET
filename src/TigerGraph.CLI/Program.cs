@@ -54,9 +54,9 @@ namespace TigerGraph.CLI
             }
             PrintLogo();
 #if WINDOWS && NET461
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions, QueryOptions, WinEvtOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions, QueryOptions, BuiltinOptions, ExecOptions, WinEvtOptions >(args);
 #else
-            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions, QueryOptions>(args);
+            ParserResult<object> result = new Parser().ParseArguments<Options, ApiOptions, PingOptions, EndpointsOptions, SchemaOptions, VerticesOptions, EdgesOptions, UpsertOptions, QueryOptions, BuiltinOptions, ExecOptions>(args);
 #endif
             result.WithParsed<ApiOptions>(o =>
             {
@@ -86,6 +86,10 @@ namespace TigerGraph.CLI
             .WithParsed<EdgesOptions>(o =>
             {
                 Exit(Edges(o).Result);
+            })
+            .WithParsed<ExecOptions>(o =>
+            {
+                Exit(Exec(o).Result);
             })
 #if WINDOWS && NET461
             .WithParsed<WinEvtOptions>(o =>
@@ -462,6 +466,45 @@ namespace TigerGraph.CLI
             }
         }
 
+        static async Task<ExitResult> Exec(ExecOptions o)
+        {
+            var source = "";
+            if (!string.IsNullOrEmpty(o.Source) && !string.IsNullOrEmpty(o.File))
+            {
+                Error("You cannot specify both the -f and -t options for the command.");
+                return ExitResult.INVALID_OPTIONS;
+            }
+            else if (string.IsNullOrEmpty(o.Source) && !string.IsNullOrEmpty(o.File))
+            {
+                if (!File.Exists(o.File))
+                {
+                    Error("Could not find the file {0}.", o.File);
+                    return ExitResult.INVALID_OPTIONS;
+                }
+                else
+                {
+                    source = File.ReadAllText(o.File);
+                }
+            }
+            else
+            {
+                source = o.Source;
+            }
+            using (var op = Begin("Executing command {0} on server {1}", source, GetGsqlServerUrl(o)))
+            {
+                var result = await ApiClient.ExecCommand(source.Replace("\\n", Environment.NewLine));
+                if (string.IsNullOrEmpty(result))
+                {
+                    op.Cancel();
+                    return ExitResult.SERVER_ERROR;
+                }
+                else
+                {
+                    op.Complete();
+                    return ExitResult.SUCCESS;
+                }
+            }
+        }
         static async Task<ExitResult> Builtin(BuiltinOptions o)
         {
             using (var op = Begin("Executing builtin {0} on object {1} of graph {2} on server {3}", o.Fn, o.FnType, o.Graph, GetRestServerUrl(o)))
@@ -601,10 +644,10 @@ namespace TigerGraph.CLI
 
 #if WINDOWS && NET461
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions),
-            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(QueryOptions), typeof(WinEvtOptions) };
+            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(QueryOptions), typeof(BuiltinOptions), typeof(ExecOptions), typeof(WinEvtOptions) };
 #else
         static Type[] OptionTypes = { typeof(Options), typeof(ApiOptions), typeof(PingOptions), typeof(EndpointsOptions), 
-            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(QueryOptions)};
+            typeof(SchemaOptions), typeof(VerticesOptions), typeof(EdgesOptions), typeof(UpsertOptions), typeof(QueryOptions), typeof(BuiltinOptions), typeof(ExecOptions)};
 #endif
 
         static Dictionary<string, Type> OptionTypesMap { get; } = new Dictionary<string, Type>();

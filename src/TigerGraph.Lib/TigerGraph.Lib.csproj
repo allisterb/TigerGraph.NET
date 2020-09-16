@@ -19,7 +19,7 @@
     <RepositoryUrl>https://github.com/allisterb/TigerGraph.NET.git</RepositoryUrl>
     <PackageTags>tigergraph graph</PackageTags>
     <Copyright>Copyright (c) 2020 Allister Beharry</Copyright>
-    <PackageReleaseNotes>First public pre-release, supports most TigerGraph query endpoints.</PackageReleaseNotes>
+    <PackageReleaseNotes>Support execute arbitrary GSQL using command endpoint.</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Framework)' == 'NET461' ">
     <DefineConstants>NET461</DefineConstants>

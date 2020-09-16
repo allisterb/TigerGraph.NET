@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
 using TigerGraph.Models;
 
 namespace TigerGraph.Base
@@ -45,6 +47,8 @@ namespace TigerGraph.Base
         public string User { get; set; }
 
         public string Pass { get; set; }
+
+        public string SessionCookie { get; set; }
         #endregion
 
         #region Methods
@@ -231,17 +235,36 @@ namespace TigerGraph.Base
                 _p += p.Key + "=" + p.Value.ToString() + "&";
             }
             _p = _p.TrimEnd('&');
-
-            var response = await GsqlHttpPostStringAsync("/login", Convert.ToBase64String(Encoding.ASCII.GetBytes("tigergraph:T00k3nBack")));
-            //var query = "gsqlserver/interpreted_query" + (parameters.Count > 0 ? "?" + _p : "");
-            //var response = await GsqlHttpPostStringAsync<QueryResult>(query, text);
-            return null; // response;
+            var query = "gsqlserver/interpreted_query" + (parameters.Count > 0 ? "?" + _p : "");
+            var response = await GsqlHttpPostStringAsync<QueryResult>(query, text);
+            return response;
         }
 
         public async Task<BuiltinResponse> Builtin(string graphName, string fn, string t)
         {
             var data = new BuiltinRequest() { function = fn, type = t };
             return await RestHttpPostAsync<BuiltinRequest, BuiltinResponse>(graphName, data);
+        }
+
+        public async Task<string> ExecCommand(string source)
+        {
+            var _r = await GsqlHttpPostStringAsync("/gsqlserver/gsql/command", source);
+            if (string.IsNullOrEmpty(_r))
+            {
+                Error("Command endpoint did not return a result.");
+            }
+            var r = _r.Split(new string[] { "__GSQL__COOKIES__,"}, StringSplitOptions.None);
+            if (r.Length == 2)
+            {
+                Info("Result: {0}", r[0].Trim());
+                SessionCookie = r[1].Trim();
+            }
+            else
+            {
+                SessionCookie = r[0].Trim();
+            }
+            Debug("Session cookie: {0}", SessionCookie);
+            return _r;
         }
         #endregion
     }
